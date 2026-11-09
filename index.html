@@ -1,802 +1,299 @@
+```html
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#101827">
-<title>Study Star</title>
-
-<!-- Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<!-- Scientific Calculator -->
-<script src="https://cdn.jsdelivr.net/npm/mathjs@13.2.0/lib/browser/math.js"></script>
-
-<style>
-:root{
-  --bg:#101827;
-  --panel:#1d293b;
-  --card:#26364c;
-  --text:#ffffff;
-  --muted:#aab7c8;
-  --accent:#38bdf8;
-  --danger:#ef4444;
-  --border:rgba(255,255,255,.12);
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Arial,Helvetica,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  min-height:100vh;
-}
-button,input,textarea,select{font:inherit}
-button{cursor:pointer}
-.hidden{display:none!important}
-button:disabled{opacity:.5;cursor:not-allowed}
-
-/* LOGIN */
-#loginPage{
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-  background:linear-gradient(145deg,#101827,#172d46);
-}
-.login-box{
-  width:100%;
-  max-width:410px;
-  background:var(--panel);
-  border:1px solid var(--border);
-  padding:30px 24px;
-  border-radius:22px;
-  text-align:center;
-  box-shadow:0 15px 45px rgba(0,0,0,.3);
-}
-.logo{
-  font-size:46px;
-  margin-bottom:8px;
-}
-.login-box h1{margin:5px 0;font-size:29px}
-.subtitle{color:var(--muted);margin-bottom:25px}
-.field{
-  width:100%;
-  padding:14px;
-  border-radius:10px;
-  border:1px solid var(--border);
-  background:var(--bg);
-  color:var(--text);
-  outline:none;
-  margin:7px 0;
-}
-.primary{
-  width:100%;
-  padding:14px;
-  background:var(--accent);
-  color:#071421;
-  font-weight:bold;
-  border:0;
-  border-radius:10px;
-  margin-top:12px;
-}
-.status{font-size:14px;min-height:22px;margin-top:12px;color:var(--muted)}
-.legal-links{
-  display:flex;
-  justify-content:center;
-  gap:18px;
-  margin-top:25px;
-  flex-wrap:wrap;
-}
-.legal-links button{
-  border:0;
-  background:none;
-  color:var(--accent);
-  text-decoration:underline;
-}
-
-/* APP */
-#appPage{min-height:100vh}
-.topbar{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  padding:15px;
-  background:var(--panel);
-  border-bottom:1px solid var(--border);
-  position:sticky;
-  top:0;
-  z-index:5;
-}
-.brand{font-size:21px;font-weight:bold}
-.top-actions{display:flex;gap:8px}
-.small-btn{
-  border:1px solid var(--border);
-  color:var(--text);
-  background:var(--card);
-  border-radius:9px;
-  padding:9px 11px;
-}
-.content{max-width:1050px;margin:auto;padding:18px}
-.welcome{
-  padding:20px;
-  border-radius:17px;
-  background:linear-gradient(120deg,#155e75,#1e40af);
-  margin-bottom:18px;
-}
-.welcome h2{margin:0 0 8px}
-.clock{font-size:14px;color:#e0f2fe}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:13px;
-}
-.app-card{
-  border:1px solid var(--border);
-  background:var(--panel);
-  color:var(--text);
-  border-radius:15px;
-  padding:20px 12px;
-  text-align:center;
-  min-height:112px;
-  font-weight:bold;
-}
-.app-card .emoji{font-size:30px;display:block;margin-bottom:10px}
-.section{
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:15px;
-  padding:16px;
-  margin-bottom:15px;
-}
-.section h3{margin-top:0}
-.footer{text-align:center;color:var(--muted);font-size:12px;padding:25px}
-
-/* FULL SCREEN TOOLS */
-.tool-screen{
-  position:fixed;
-  inset:0;
-  z-index:20;
-  background:var(--bg);
-  display:flex;
-  flex-direction:column;
-  overflow:auto;
-}
-.tool-header{
-  background:var(--panel);
-  padding:14px;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  position:sticky;
-  top:0;
-  z-index:2;
-  border-bottom:1px solid var(--border);
-}
-.tool-header h2{font-size:19px;margin:0}
-.back-btn{
-  border:0;
-  border-radius:9px;
-  padding:10px 14px;
-  background:var(--accent);
-  color:#071421;
-  font-weight:bold;
-}
-.tool-body{
-  width:100%;
-  max-width:700px;
-  padding:17px;
-  margin:0 auto;
-}
-
-/* CALCULATOR */
-.calc-display{
-  width:100%;
-  min-height:95px;
-  padding:20px 14px;
-  text-align:right;
-  font-size:27px;
-  overflow-wrap:anywhere;
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:13px;
-  margin-bottom:12px;
-}
-.calc-options{display:flex;gap:10px;margin-bottom:12px}
-.calc-options select{
-  flex:1;
-  padding:10px;
-  border-radius:8px;
-  background:var(--panel);
-  color:var(--text);
-  border:1px solid var(--border);
-}
-.calc-grid{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:7px;
-}
-.calc-grid button{
-  min-height:54px;
-  border:1px solid var(--border);
-  border-radius:10px;
-  background:var(--card);
-  color:var(--text);
-  font-size:16px;
-}
-.calc-grid button.operator{background:#075985}
-.calc-grid button.equal{background:#16a34a;color:white}
-.calc-grid button.clear{background:#991b1b}
-
-/* CALENDAR */
-.calendar-top{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:8px;
-  margin-bottom:12px;
-}
-.calendar-top button,.action-btn{
-  background:var(--accent);
-  color:#071421;
-  border:0;
-  padding:10px 13px;
-  border-radius:8px;
-  font-weight:bold;
-}
-.calendar-grid{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:5px;
-}
-.day-name,.day{
-  text-align:center;
-  padding:11px 2px;
-  border-radius:8px;
-}
-.day-name{color:var(--muted);font-size:12px}
-.day{
-  background:var(--panel);
-  border:1px solid var(--border);
-  min-height:42px;
-}
-.day.selected{background:var(--accent);color:#071421}
-.day.today{border:2px solid #22c55e}
-.event-item,.note-item,.reminder-item{
-  padding:12px;
-  border:1px solid var(--border);
-  background:var(--card);
-  border-radius:10px;
-  margin:8px 0;
-  overflow-wrap:anywhere;
-}
-.form-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
-.form-row input,.form-row textarea,.form-row select{
-  flex:1;
-  min-width:130px;
-  padding:12px;
-  border-radius:8px;
-  border:1px solid var(--border);
-  background:var(--bg);
-  color:var(--text);
-}
-textarea{resize:vertical;min-height:90px}
-.action-btn.danger{background:var(--danger);color:white}
-
-/* STOPWATCH / TIMER */
-.time-display{
-  font-size:clamp(42px,12vw,70px);
-  text-align:center;
-  font-weight:bold;
-  padding:35px 0;
-  font-variant-numeric:tabular-nums;
-}
-.center-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
-.center-actions button{
-  padding:13px 20px;
-  border:0;
-  border-radius:10px;
-  background:var(--accent);
-  color:#071421;
-  font-weight:bold;
-}
-.center-actions .stop{background:var(--danger);color:white}
-.theme-list{display:flex;gap:8px;flex-wrap:wrap}
-.theme-list button{
-  border:1px solid var(--border);
-  padding:11px 14px;
-  border-radius:9px;
-  color:white;
-}
-.modal{
-  position:fixed;
-  inset:0;
-  z-index:40;
-  background:rgba(0,0,0,.7);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  padding:18px;
-}
-.modal-box{
-  width:100%;
-  max-width:500px;
-  max-height:85vh;
-  overflow:auto;
-  background:var(--panel);
-  padding:22px;
-  border-radius:15px;
-}
-.modal-box h2{margin-top:0}
-@media(max-width:380px){
-  .grid{gap:9px}
-  .app-card{padding:15px 7px}
-  .calc-grid{gap:5px}
-  .calc-grid button{font-size:14px;min-height:48px}
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyHub Pro — All-in-One Student Dashboard</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#0f172a',
+                            bright: '#f8fafc',
+                            green: '#064e3b',
+                            blue: '#1e3a8a',
+                            red: '#7f1d1d'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col transition-colors duration-300" id="bodyRoot" data-theme="dark">
 
-<body>
-
-<!-- LOGIN PAGE -->
-<div id="loginPage">
-  <div class="login-box">
-    <div class="logo">⭐</div>
-    <h1>Study Star</h1>
-    <p class="subtitle">Your Smart Study Companion</p>
-
-    <div id="emailStep">
-      <input id="emailInput" class="field" type="email"
-        placeholder="Enter your email address" autocomplete="email">
-      <button id="sendOtpBtn" class="primary" onclick="sendOTP()">Send OTP</button>
+    <!-- Toast Notification Box -->
+    <div id="toast" class="fixed top-5 right-5 z-50 transform translate-x-full transition-transform duration-300 bg-slate-800 text-white px-4 py-3 rounded-xl shadow-2xl border border-slate-700 flex items-center space-x-3">
+        <i id="toastIcon" class="fa-solid fa-circle-info text-blue-400"></i>
+        <span id="toastMsg" class="text-sm font-medium">Notification message</span>
     </div>
 
-    <div id="otpStep" class="hidden">
-      <p>Enter the OTP sent to your email address.</p>
-      <input id="otpInput" class="field" type="text"
-        inputmode="numeric" maxlength="8" placeholder="Enter OTP">
-      <button id="verifyOtpBtn" class="primary" onclick="verifyOTP()">Verify & Login</button>
-      <button class="small-btn" style="margin-top:12px" onclick="backToEmail()">Change Email</button>
+    <!-- ==================== 1. LOGIN / AUTHENTICATION VIEW ==================== -->
+    <div id="authView" class="fixed inset-0 z-40 bg-slate-950 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-8 shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-500 to-indigo-500"></div>
+            
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-500/10 text-blue-400 mb-4 text-2xl font-bold">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <h1 class="text-2xl font-bold tracking-tight text-white">StudyHub Pro</h1>
+                <p class="text-sm text-slate-400 mt-1">Sign in with Email OTP to access your dashboard</p>
+            </div>
+
+            <!-- Step 1: Email Input -->
+            <div id="stepEmail" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Email Address</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
+                            <i class="fa-solid fa-envelope"></i>
+                        </span>
+                        <input type="email" id="loginEmail" placeholder="student@example.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-colors">
+                    </div>
+                </div>
+                <button onclick="requestOTP()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 rounded-xl shadow-lg shadow-blue-600/20 transition-all text-sm">
+                    Send Verification OTP
+                </button>
+            </div>
+
+            <!-- Step 2: OTP Verification -->
+            <div id="stepOTP" class="space-y-4 hidden">
+                <div class="bg-blue-500/10 border border-blue-500/20 p-3 rounded-xl text-xs text-blue-300 text-center">
+                    OTP sent to <span id="displayEmail" class="font-bold underline"></span>. (Simulated Code: <strong id="mockOtpCode" class="text-white"></strong>)
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Enter 4-Digit OTP</label>
+                    <input type="text" id="loginOtp" maxlength="4" placeholder="1234" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-center text-xl tracking-widest text-white placeholder-slate-600 focus:outline-none focus:border-blue-500 font-mono">
+                </div>
+                <div class="flex space-x-3">
+                    <button onclick="backToEmail()" class="w-1/3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-3 rounded-xl transition-all text-sm">
+                        Back
+                    </button>
+                    <button onclick="verifyOTP()" class="w-2/3 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-xl shadow-lg shadow-emerald-600/20 transition-all text-sm">
+                        Verify & Login
+                    </button>
+                </div>
+            </div>
+
+            <!-- Terms & Privacy Links inside Login -->
+            <div class="mt-6 text-center text-xs text-slate-500">
+                By logging in, you agree to our 
+                <button onclick="openModal('privacyModal')" class="text-blue-400 hover:underline">Privacy Policy</button> & 
+                <button onclick="openModal('termsModal')" class="text-blue-400 hover:underline">Terms & Conditions</button>
+            </div>
+        </div>
     </div>
 
-    <div id="loginStatus" class="status" aria-live="polite"></div>
+    <!-- ==================== 2. MAIN DASHBOARD VIEW (Protected) ==================== -->
+    <div id="dashboardView" class="flex-1 flex flex-col hidden">
+        <!-- Top Navbar -->
+        <header class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-30 px-4 lg:px-8 py-3.5 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold shadow-md shadow-blue-600/20">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <span class="font-bold text-lg tracking-tight text-white">StudyHub Pro</span>
+                    <div id="liveClock" class="text-xs text-slate-400 font-mono">00:00:00 IST</div>
+                </div>
+            </div>
 
-    <div class="legal-links">
-      <button onclick="openLegal('privacy')">Privacy Policy</button>
-      <button onclick="openLegal('terms')">Terms & Conditions</button>
-    </div>
-  </div>
-</div>
+            <!-- Theme Switcher & User Profile/Logout -->
+            <div class="flex items-center space-x-3">
+                <div class="relative group">
+                    <button class="flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded-xl text-xs font-medium border border-slate-700 transition-colors">
+                        <i class="fa-solid fa-palette text-blue-400"></i>
+                        <span class="hidden sm:inline">Theme</span>
+                    </button>
+                    <div class="absolute right-0 mt-2 w-36 bg-slate-900 border border-slate-800 rounded-xl shadow-xl py-1 hidden group-hover:block">
+                        <button onclick="setTheme('dark')" class="w-full text-left px-4 py-2 text-xs hover:bg-slate-800 flex items-center space-x-2"><span class="w-3 h-3 rounded-full bg-slate-950 border border-slate-700"></span><span>Dark</span></button>
+                        <button onclick="setTheme('bright')" class="w-full text-left px-4 py-2 text-xs hover:bg-slate-800 flex items-center space-x-2"><span class="w-3 h-3 rounded-full bg-slate-100 border border-slate-300"></span><span>Bright</span></button>
+                        <button onclick="setTheme('green')" class="w-full text-left px-4 py-2 text-xs hover:bg-slate-800 flex items-center space-x-2"><span class="w-3 h-3 rounded-full bg-emerald-800"></span><span>Green</span></button>
+                        <button onclick="setTheme('blue')" class="w-full text-left px-4 py-2 text-xs hover:bg-slate-800 flex items-center space-x-2"><span class="w-3 h-3 rounded-full bg-blue-800"></span><span>Blue</span></button>
+                        <button onclick="setTheme('red')" class="w-full text-left px-4 py-2 text-xs hover:bg-slate-800 flex items-center space-x-2"><span class="w-3 h-3 rounded-full bg-rose-800"></span><span>Red</span></button>
+                    </div>
+                </div>
 
-<!-- MAIN APP -->
-<div id="appPage" class="hidden">
-  <header class="topbar">
-    <div class="brand">⭐ Study Star</div>
-    <div class="top-actions">
-      <button class="small-btn" onclick="openThemes()">Themes</button>
-      <button class="small-btn" onclick="logout()">Logout</button>
-    </div>
-  </header>
+                <button onclick="logout()" class="flex items-center space-x-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 px-3 py-2 rounded-xl text-xs font-medium transition-colors">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span class="hidden sm:inline">Logout</span>
+                </button>
+            </div>
+        </header>
 
-  <main class="content">
-    <div class="welcome">
-      <h2>Welcome to Study Star!</h2>
-      <div id="liveClock" class="clock">Loading date and time...</div>
-    </div>
+        <!-- Main Content Grid -->
+        <main class="flex-1 p-4 lg:p-8 max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <!-- Card 1: Exam Countdown -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between shadow-xl">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center">
+                                <i class="fa-solid fa-hourglass-half"></i>
+                            </div>
+                            <h2 class="font-bold text-base text-white">Exam Countdown</h2>
+                        </div>
+                        <button onclick="openEditExamModal()" class="text-slate-400 hover:text-white text-xs"><i class="fa-solid fa-pen"></i></button>
+                    </div>
+                    <div class="mb-3">
+                        <h3 id="examNameDisplay" class="font-semibold text-sm text-slate-300">Final Semester Exam</h3>
+                        <p id="examDateDisplay" class="text-xs text-slate-500">Target Date: Loading...</p>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2 text-center my-4 font-mono">
+                        <div class="bg-slate-950 p-2 rounded-xl border border-slate-800">
+                            <span id="cDays" class="text-lg font-bold text-amber-400">00</span>
+                            <span class="block text-[10px] text-slate-500 uppercase">Days</span>
+                        </div>
+                        <div class="bg-slate-950 p-2 rounded-xl border border-slate-800">
+                            <span id="cHours" class="text-lg font-bold text-amber-400">00</span>
+                            <span class="block text-[10px] text-slate-500 uppercase">Hours</span>
+                        </div>
+                        <div class="bg-slate-950 p-2 rounded-xl border border-slate-800">
+                            <span id="cMins" class="text-lg font-bold text-amber-400">00</span>
+                            <span class="block text-[10px] text-slate-500 uppercase">Mins</span>
+                        </div>
+                        <div class="bg-slate-950 p-2 rounded-xl border border-slate-800">
+                            <span id="cSecs" class="text-lg font-bold text-amber-400">00</span>
+                            <span class="block text-[10px] text-slate-500 uppercase">Secs</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    <div class="grid">
-      <button class="app-card" onclick="openTool('calculator')">
-        <span class="emoji">🧮</span>Scientific Calculator
-      </button>
-      <button class="app-card" onclick="openTool('calendar')">
-        <span class="emoji">📅</span>Calendar
-      </button>
-      <button class="app-card" onclick="openTool('stopwatch')">
-        <span class="emoji">⏱️</span>Stopwatch
-      </button>
-      <button class="app-card" onclick="openTool('timer')">
-        <span class="emoji">⏳</span>Timer
-      </button>
-      <button class="app-card" onclick="openTool('notes')">
-        <span class="emoji">📝</span>Notes
-      </button>
-      <button class="app-card" onclick="openTool('reminders')">
-        <span class="emoji">🔔</span>Reminders
-      </button>
-      <button class="app-card" onclick="openTool('countdown')">
-        <span class="emoji">🎯</span>Exam Countdown
-      </button>
-      <button class="app-card" onclick="openTool('themes')">
-        <span class="emoji">🎨</span>App Themes
-      </button>
-    </div>
+            <!-- Card 2: Scientific Calculator Launcher -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between shadow-xl">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center">
+                            <i class="fa-solid fa-calculator"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-bold text-base text-white">Scientific Calculator</h2>
+                            <p class="text-xs text-slate-400">Advanced math calculations</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400 mb-6">Access a full-featured scientific calculator with trigonometric, logarithmic, and exponential functions.</p>
+                </div>
+                <button onclick="openModal('calcModal')" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-semibold py-2.5 rounded-xl text-xs transition-all flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-expand"></i>
+                    <span>Open Calculator (Full Screen)</span>
+                </button>
+            </div>
 
-    <div class="section" style="margin-top:18px">
-      <h3>Quick Information</h3>
-      <p>Use your calendar, notes and reminders to organise your study routine.</p>
-      <p id="userEmail" style="color:var(--muted);overflow-wrap:anywhere"></p>
-    </div>
+            <!-- Card 3: Calendar Launcher -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between shadow-xl">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+                            <i class="fa-solid fa-calendar-days"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-bold text-base text-white">Interactive Calendar</h2>
+                            <p class="text-xs text-slate-400">Monthly schedule & planner</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400 mb-6">View monthly calendars, check dates, and organize your study timeline seamlessly.</p>
+                </div>
+                <button onclick="openModal('calendarModal')" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-xl text-xs transition-all flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-expand"></i>
+                    <span>Open Calendar (Full Screen)</span>
+                </button>
+            </div>
 
-    <div class="footer">
-      © 2026 Study Star. All Rights Reserved.<br>
-      Designed with ❤️ by Sandip Garai.
-    </div>
-  </main>
-</div>
+            <!-- Card 4: Stopwatch & Timer Launcher -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between shadow-xl">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center">
+                            <i class="fa-solid fa-stopwatch"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-bold text-base text-white">Stopwatch & Timer</h2>
+                            <p class="text-xs text-slate-400">Pomodoro & timing tools</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400 mb-6">Track study sessions with a precise stopwatch or set custom countdown timers for breaks.</p>
+                </div>
+                <button onclick="openModal('timerModal')" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-semibold py-2.5 rounded-xl text-xs transition-all flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-expand"></i>
+                    <span>Open Timer (Full Screen)</span>
+                </button>
+            </div>
 
-<!-- FULL SCREEN TOOL -->
-<div id="toolScreen" class="tool-screen hidden">
-  <div class="tool-header">
-    <button class="back-btn" onclick="closeTool()">← Back</button>
-    <h2 id="toolTitle">Tool</h2>
-  </div>
-  <div id="toolBody" class="tool-body"></div>
-</div>
+            <!-- Card 5: Notes & Reminders -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between shadow-xl md:col-span-2">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center">
+                                <i class="fa-solid fa-note-sticky"></i>
+                            </div>
+                            <h2 class="font-bold text-base text-white">Notes & Reminders</h2>
+                        </div>
+                        <button onclick="openAddNoteModal()" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center space-x-1.5">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Add Note</span>
+                        </button>
+                    </div>
+                    <div id="notesContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-56 overflow-y-auto pr-1">
+                        <!-- Dynamic Notes -->
+                    </div>
+                </div>
+            </div>
 
-<!-- MODAL -->
-<div id="modal" class="modal hidden" onclick="modalBackdrop(event)">
-  <div class="modal-box">
-    <div id="modalContent"></div>
-    <button class="action-btn" style="margin-top:15px" onclick="closeModal()">Close</button>
-  </div>
-</div>
-
-<script>
-/* ======================================
-   SUPABASE CONFIGURATION
-====================================== */
-
-const SUPABASE_URL = "https://bsnkqpmhdfifxbzagxnj.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_rfBu8up21JKtCyGMkeEoOA_sYwvguFs";
-
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
-
-/* ======================================
-   GENERAL HELPERS
-====================================== */
-
-const $ = id => document.getElementById(id);
-
-function safeText(value){
-  return String(value ?? "").replace(/[&<>"']/g, char => ({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#039;"
-  })[char]);
-}
-
-function getData(key, fallback){
-  try{
-    const value = localStorage.getItem("studyStar_" + key);
-    return value ? JSON.parse(value) : fallback;
-  }catch(error){
-    return fallback;
-  }
-}
-
-function saveData(key, value){
-  localStorage.setItem("studyStar_" + key, JSON.stringify(value));
-}
-
-function setStatus(message, error=false){
-  $("loginStatus").textContent = message;
-  $("loginStatus").style.color = error ? "#fca5a5" : "#86efac";
-}
-
-/* ======================================
-   EMAIL OTP LOGIN
-====================================== */
-
-let loginEmail = "";
-
-async function sendOTP(){
-  const email = $("emailInput").value.trim();
-
-  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
-    setStatus("Please enter a valid email address.", true);
-    return;
-  }
-
-  const button = $("sendOtpBtn");
-  button.disabled = true;
-  button.textContent = "Sending...";
-  setStatus("Sending OTP. Please wait...");
-
-  try{
-    const {data,error} = await supabaseClient.auth.signInWithOtp({
-      email: email,
-      options:{
-        shouldCreateUser:true
-      }
-    });
-
-    if(error) throw error;
-
-    loginEmail = email;
-    $("emailStep").classList.add("hidden");
-    $("otpStep").classList.remove("hidden");
-    setStatus("OTP sent successfully. Please check your inbox.");
-  }catch(error){
-    console.error("OTP Error:",error);
-    setStatus(error.message || "Unable to send OTP. Please try again.",true);
-  }finally{
-    button.disabled = false;
-    button.textContent = "Send OTP";
-  }
-}
-
-async function verifyOTP(){
-  const token = $("otpInput").value.trim();
-
-  if(!loginEmail){
-    setStatus("Please enter your email address again.",true);
-    backToEmail();
-    return;
-  }
-
-  if(!token){
-    setStatus("Please enter the OTP.",true);
-    return;
-  }
-
-  const button = $("verifyOtpBtn");
-  button.disabled = true;
-  button.textContent = "Verifying...";
-  setStatus("Verifying OTP...");
-
-  try{
-    const {data,error} = await supabaseClient.auth.verifyOtp({
-      email:loginEmail,
-      token:token,
-      type:"email"
-    });
-
-    if(error) throw error;
-
-    if(data.session){
-      showDashboard(data.session.user);
-    }else{
-      setStatus("Login could not be completed. Please try again.",true);
-    }
-  }catch(error){
-    console.error("OTP Verification Error:",error);
-    setStatus(error.message || "Invalid or expired OTP.",true);
-  }finally{
-    button.disabled = false;
-    button.textContent = "Verify & Login";
-  }
-}
-
-function backToEmail(){
-  $("otpStep").classList.add("hidden");
-  $("emailStep").classList.remove("hidden");
-  $("otpInput").value = "";
-  $("loginStatus").textContent = "";
-}
-
-async function logout(){
-  const {error} = await supabaseClient.auth.signOut();
-  if(error) alert("Logout error: " + error.message);
-  $("appPage").classList.add("hidden");
-  $("loginPage").classList.remove("hidden");
-  closeTool();
-}
-
-/* ======================================
-   AUTH SESSION
-====================================== */
-
-function showDashboard(user){
-  $("loginPage").classList.add("hidden");
-  $("appPage").classList.remove("hidden");
-  $("userEmail").textContent = "Logged in as: " + (user.email || "");
-  updateClock();
-}
-
-supabaseClient.auth.onAuthStateChange((event,session)=>{
-  if(session && session.user){
-    showDashboard(session.user);
-  }else{
-    $("appPage").classList.add("hidden");
-    $("loginPage").classList.remove("hidden");
-  }
-});
-
-async function checkSession(){
-  try{
-    const {data,error} = await supabaseClient.auth.getSession();
-    if(error) throw error;
-    if(data.session){
-      showDashboard(data.session.user);
-    }
-  }catch(error){
-    console.error("Session Error:",error);
-  }
-}
-checkSession();
-
-/* ======================================
-   LIVE DATE AND TIME - INDIA
-====================================== */
-
-function updateClock(){
-  const now = new Date();
-  $("liveClock").textContent = now.toLocaleString("en-IN",{
-    timeZone:"Asia/Kolkata",
-    weekday:"long",
-    day:"2-digit",
-    month:"long",
-    year:"numeric",
-    hour:"2-digit",
-    minute:"2-digit",
-    second:"2-digit",
-    hour12:true
-  });
-}
-setInterval(updateClock,1000);
-
-/* ======================================
-   TOOL NAVIGATION
-====================================== */
-
-let currentTool = "";
-
-const toolNames = {
-  calculator:"Scientific Calculator",
-  calendar:"Calendar",
-  stopwatch:"Stopwatch",
-  timer:"Timer",
-  notes:"Notes",
-  reminders:"Reminders",
-  countdown:"Exam Countdown",
-  themes:"App Themes"
-};
-
-function openTool(name){
-  currentTool = name;
-  $("toolTitle").textContent = toolNames[name] || "Study Star";
-  $("toolScreen").classList.remove("hidden");
-
-  const renderers = {
-    calculator:renderCalculator,
-    calendar:renderCalendar,
-    stopwatch:renderStopwatch,
-    timer:renderTimer,
-    notes:renderNotes,
-    reminders:renderReminders,
-    countdown:renderCountdown,
-    themes:renderThemes
-  };
-
-  if(renderers[name]) renderers[name]();
-}
-
-function closeTool(){
-  $("toolScreen").classList.add("hidden");
-  $("toolBody").innerHTML = "";
-  currentTool = "";
-  stopTimerInterval();
-}
-
-function setToolHTML(html){
-  $("toolBody").innerHTML = html;
-}
-
-/* ======================================
-   SCIENTIFIC CALCULATOR
-====================================== */
-
-let calcExpression = "";
-let calcAnswer = "";
-let angleMode = "DEG";
-
-function renderCalculator(){
-  setToolHTML(`
-    <div class="calc-display">
-      <div id="calcExpression" style="font-size:15px;color:var(--muted);min-height:22px"></div>
-      <div id="calcResult">0</div>
+        </main>
     </div>
 
-    <div class="calc-options">
-      <select id="angleSelect" onchange="angleMode=this.value">
-        <option value="DEG">DEG</option>
-        <option value="RAD">RAD</option>
-      </select>
-      <button class="action-btn" onclick="calcExpression='' ; updateCalc()">Clear</button>
-    </div>
 
-    <div class="calc-grid">
-      <button onclick="calcAdd('sin(')">sin</button>
-      <button onclick="calcAdd('cos(')">cos</button>
-      <button onclick="calcAdd('tan(')">tan</button>
-      <button onclick="calcAdd('asin(')">sin⁻¹</button>
-      <button onclick="calcAdd('acos(')">cos⁻¹</button>
+    <!-- ==================== FULL SCREEN MODALS ==================== -->
 
-      <button onclick="calcAdd('atan(')">tan⁻¹</button>
-      <button onclick="calcAdd('sqrt(')">√</button>
-      <button onclick="calcAdd('^2')">x²</button>
-      <button onclick="calcAdd('^')">xʸ</button>
-      <button onclick="calcAdd('!')">n!</button>
+    <!-- Scientific Calculator Full Screen Modal -->
+    <div id="calcModal" class="fixed inset-0 z-50 bg-slate-950 flex flex-col hidden">
+        <div class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-calculator text-purple-400 text-xl"></i>
+                <h2 class="font-bold text-lg text-white">Scientific Calculator</h2>
+            </div>
+            <button onclick="closeModal('calcModal')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-xs font-semibold flex items-center space-x-2">
+                <i class="fa-solid fa-xmark"></i>
+                <span>Close</span>
+            </button>
+        </div>
+        <div class="flex-1 flex items-center justify-center p-4">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-lg shadow-2xl">
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 mb-4 text-right">
+                    <div id="calcHistory" class="text-xs text-slate-500 font-mono h-5"></div>
+                    <div id="calcDisplay" class="text-2xl font-mono text-white tracking-wider overflow-x-auto">0</div>
+                </div>
+                <div class="grid grid-cols-4 gap-2 text-sm font-semibold">
+                    <button onclick="calcClear()" class="bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 py-3 rounded-xl">C</button>
+                    <button onclick="calcAppend('(')" class="bg-slate-800 hover:bg-slate-700 py-3 rounded-xl">(</button>
+                    <button onclick="calcAppend(')')" class="bg-slate-800 hover:bg-slate-700 py-3 rounded-xl">)</button>
+                    <button onclick="calcAppend('/')" class="bg-purple-600/20 text-purple-400 hover:bg-purple-600/30 py-3 rounded-xl">÷</button>
 
-      <button onclick="calcAdd('log10(')">log</button>
-      <button onclick="calcAdd('log(')">ln</button>
-      <button onclick="calcAdd('pi')">π</button>
-      <button onclick="calcAdd('e')">e</button>
-      <button onclick="calcAdd('%')">%</button>
+                    <button onclick="calcFunc('Math.sin')" class="bg-slate-800 hover:bg-slate-700 py-3 rounded-xl text-xs">sin</button>
+                    <button onclick="calcAppend('7')" class="bg-slate-800/50 hover:bg-slate-800 py-3 rounded-xl">7</button>
+                    <button onclick="calcAppend('8')" class="bg-slate-800/50 hover:bg-slate-800 py-3 rounded-xl">8</button>
+                    <button onclick="calcAppend('9')" class="bg-slate-800/50 hover:bg-slate-800 py-3 rounded-xl">9</button>
+                    <button onclick="calcAppend('*')" class="bg-purple-600/20 text-purple-400 hover:bg-purple-600/30 py-3 rounded-xl">×</button>
 
-      <button onclick="calcAdd('(')">(</button>
-      <button onclick="calcAdd(')')">)</button>
-      <button onclick="calcAdd('/')">÷</button>
-      <button onclick="calcAdd('*')">×</button>
-      <button class="clear" onclick="calcDelete()">DEL</button>
-
-      <button onclick="calcAdd('7')">7</button>
-      <button onclick="calcAdd('8')">8</button>
-      <button onclick="calcAdd('9')">9</button>
-      <button onclick="calcAdd('-')">−</button>
-      <button onclick="calcAdd('+')">+</button>
-
-      <button onclick="calcAdd('4')">4</button>
-      <button onclick="calcAdd('5')">5</button>
-      <button onclick="calcAdd('6')">6</button>
-      <button onclick="calcAdd('0')">0</button>
-      <button onclick="calcAdd('.')">.</button>
-
-      <button class="clear" onclick="calcClear()">AC</button>
-      <button class="equal" style="grid-column:span 4" onclick="calcEvaluate()">=</button>
-    </div>
-  `);
-  updateCalc();
-}
-
-function calcAdd(value){
-  calcExpression += value;
-  updateCalc();
-}
-
-function calcDelete(){
-  calcExpression = calcExpression.slice(0,-1);
-  updateCalc();
-}
-
-function calcClear(){
-  calcExpression = "";
-  calcAnswer = "";
-  updateCalc();
-}
-
-function updateCalc(){
-  const expression = $("calcExpression");
-  const result = $("calcResult");
-  if(expression) expression.textContent = calcExpression;
-  if(result) result.textContent = calcAnswer || "0";
-}
-
-function calcEvaluate(){
-  try{
-    if(!calcExpression.trim()) return;
-
-    let expr = calcExpression;
-
-    const mathScope = {
-      sin:x=>Math.sin(angleMode==="DEG"?x*Math.PI/180:x),
-      cos:x=>Math.cos(angleMode==="DEG"?x*Math.PI/180:x),
-      tan:x=>Math.tan(angleMode==="DEG"?x*Math.PI/180:x),
-      asin:x=>{
-        const v=Math.asin(x);
-        return angleMode==="DEG"?v*180/Math.PI:v;
-      },
-      acos:x=>{
-        const v=Math.acos(x);
-        return angleMode==="DEG"?v*180/Math.PI:v;
-      },
-      atan:x=>{
-        const v=Math.a
+                    <button onclick="calcFunc('Math.cos')" class="bg-slate-800 hover:bg-slate-700 py-3 rounded-xl text-xs">cos</button>
+                    <button onclick="calcAppend('4')" class="bg-slate-800/50 hover:bg-slate-800 py-3 rounded-xl">4</button>
+                    <button onclick="calcAp
