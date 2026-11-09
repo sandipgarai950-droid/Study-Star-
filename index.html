@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sandip Study Hub</title>
+<title>Study Star ⭐</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -12,527 +12,725 @@
 body{
  margin:0;font-family:Arial,sans-serif;
  background:#101827;color:white;
- transition:.3s;
+ transition:.3s
+}
+header{
+ text-align:center;padding:22px 10px;
+ background:linear-gradient(135deg,#172554,#2563eb);
+}
+header h1{margin:0;font-size:30px}
+header p{margin:7px 0 0}
+.container{max-width:950px;margin:auto;padding:15px}
+.card{
+ background:#1e293b;padding:18px;margin:14px 0;
+ border-radius:15px;box-shadow:0 4px 15px #0003
+}
+input,textarea,select,button{
+ width:100%;padding:12px;margin:7px 0;
+ border:0;border-radius:9px;font-size:15px
+}
+input,textarea,select{background:#334155;color:white}
+button{
+ background:#2563eb;color:white;font-weight:bold;
+ cursor:pointer
+}
+button.secondary{background:#475569}
+button.danger{background:#dc2626}
+.grid{
+ display:grid;grid-template-columns:repeat(2,1fr);gap:10px
+}
+.hidden{display:none!important}
+.small{font-size:13px;color:#cbd5e1}
+a{color:#60a5fa}
+.tabs button{margin:3px 0}
+.item{
+ background:#334155;padding:12px;margin:8px 0;
+ border-radius:9px;overflow-wrap:anywhere
+}
+#clock{font-size:23px;font-weight:bold;text-align:center}
+footer{text-align:center;padding:20px;color:#cbd5e1}
+.policy{line-height:1.6}
+@media(max-width:550px){
+ .grid{grid-template-columns:1fr}
 }
 body.bright{background:#f1f5f9;color:#172033}
-body.green{background:#063b30;color:white}
-body.blue{background:#092b55;color:white}
-body.red{background:#521b25;color:white}
-
-.container{max-width:950px;margin:auto;padding:18px}
-.card{
- background:rgba(255,255,255,.10);
- border:1px solid rgba(255,255,255,.15);
- border-radius:15px;padding:18px;margin:13px 0;
-}
-.bright .card{background:white;color:#172033}
-h1{text-align:center;color:#38bdf8}
-h2{font-size:20px}
-input,textarea,select{
- width:100%;padding:13px;margin:7px 0;
- border:0;border-radius:9px;font-size:15px;
- background:#fff;color:#111;
-}
-button{
- padding:12px 17px;border:0;border-radius:9px;
- background:#0ea5e9;color:white;
- font-weight:bold;cursor:pointer;margin:5px 2px;
-}
-button:hover{opacity:.85}
-.danger{background:#dc3545}
-.secondary{background:#64748b}
-.success{background:#16a34a}
-.hidden{display:none!important}
-.grid{
- display:grid;grid-template-columns:repeat(2,1fr);gap:10px;
-}
-.item{
- background:rgba(255,255,255,.12);
- padding:13px;border-radius:10px;margin:8px 0;
- overflow-wrap:anywhere;
-}
-.bright .item{background:#e2e8f0;color:#111}
-small{opacity:.8}
-#message{padding:10px;color:#facc15}
-footer{text-align:center;padding:25px;opacity:.8}
+body.bright .card{background:white;color:#172033}
+body.bright input,body.bright textarea,body.bright select{background:#e2e8f0;color:#172033}
+body.bright .item{background:#e2e8f0}
+body.green{background:#052e16}
+body.green header{background:linear-gradient(135deg,#14532d,#16a34a)}
+body.green button{background:#16a34a}
+body.blue{background:#0c1d3b}
+body.blue header{background:linear-gradient(135deg,#1e3a8a,#0284c7)}
+body.red{background:#450a0a}
+body.red header{background:linear-gradient(135deg,#7f1d1d,#dc2626)}
 </style>
 </head>
 
 <body>
+
+<header>
+<h1>⭐ Study Star</h1>
+<p>Study Smart • Stay Consistent</p>
+<div id="clock"></div>
+</header>
+
 <div class="container">
 
-<h1>📚 Sandip Study Hub</h1>
-<p style="text-align:center">Your Personal Study Companion</p>
+<!-- LOGIN PAGE -->
+<section id="loginPage" class="card">
+<h2>Welcome to Study Star ⭐</h2>
+<p>Login with your email to continue.</p>
 
-<!-- LOGIN -->
-<div id="authArea" class="card">
-<h2>🔐 Login / Sign Up</h2>
-
-<p>Enter your Email ID to receive an OTP.</p>
-
-<input type="email" id="email" placeholder="Enter your Email ID">
-
-<button onclick="sendOTP()" id="sendBtn">Send OTP</button>
+<input type="email" id="email" placeholder="Enter your email address">
+<button onclick="sendOTP()">Send OTP</button>
 
 <div id="otpArea" class="hidden">
-<input type="text" id="otp" placeholder="Enter 8 Digit OTP"
+<input type="text" id="otp" placeholder="Enter email OTP"
  maxlength="8" inputmode="numeric">
-<button onclick="verifyOTP()">Verify OTP</button>
+<button onclick="verifyOTP()">Verify OTP & Login</button>
 </div>
 
-<p id="message"></p>
-</div>
+<p id="loginMessage" class="small"></p>
 
-<!-- APP -->
-<div id="appArea" class="hidden">
+<hr>
+<button class="secondary" onclick="showPolicy('privacy')">Privacy Policy</button>
+<button class="secondary" onclick="showPolicy('terms')">Terms & Conditions</button>
+</section>
+
+<!-- POLICY PAGE -->
+<section id="policyPage" class="card hidden">
+<button class="secondary" onclick="backToLogin()">← Back</button>
+<div id="policyContent" class="policy"></div>
+</section>
+
+<!-- DASHBOARD -->
+<section id="dashboard" class="hidden">
 
 <div class="card">
-<h2>👋 Welcome to Study Hub</h2>
-<p id="userEmail"></p>
+<h2>Welcome to Study Star ⭐</h2>
+<p>Designed with ❤️ by Sandip Garai</p>
 <button class="danger" onclick="logout()">Logout</button>
 </div>
 
-<!-- DASHBOARD -->
 <div class="card">
-<h2>🏠 Dashboard</h2>
+<h3>🎨 Choose Theme</h3>
+<select id="theme" onchange="changeTheme(this.value)">
+<option value="">Dark</option>
+<option value="bright">Bright</option>
+<option value="green">Green</option>
+<option value="blue">Blue</option>
+<option value="red">Red</option>
+</select>
+</div>
+
+<div class="card">
+<h3>📚 Study Dashboard</h3>
 <div class="grid">
-<div class="item">📅 Calendar<br><b id="eventCount">0</b> Events</div>
-<div class="item">📝 Notes<br><b id="noteCount">0</b> Notes</div>
-<div class="item">⏰ Reminders<br><b id="reminderCount">0</b> Reminders</div>
-<div class="item">📖 Study Hub<br>Ready to Study</div>
+<button onclick="openSection('pdfSection')">📄 PDF Library</button>
+<button onclick="openSection('calculatorSection')">🧮 Calculator</button>
+<button onclick="openSection('calendarSection')">📅 Calendar</button>
+<button onclick="openSection('notesSection')">📝 Notes</button>
+<button onclick="openSection('reminderSection')">⏰ Reminders</button>
+<button onclick="openSection('timerSection')">⏱️ Stopwatch & Timer</button>
 </div>
 </div>
 
-<!-- THEMES -->
-<div class="card">
-<h2>🎨 Choose Theme</h2>
-<button onclick="setTheme('')">Dark</button>
-<button onclick="setTheme('bright')">Bright</button>
-<button onclick="setTheme('green')">Green</button>
-<button onclick="setTheme('blue')">Blue</button>
-<button onclick="setTheme('red')">Red</button>
+<!-- PDF -->
+<div id="pdfSection" class="card hidden">
+<button class="secondary" onclick="backDashboard()">← Dashboard</button>
+<h2>📄 PDF Library</h2>
+<input type="file" id="pdfFile" accept="application/pdf">
+<button onclick="uploadPDF()">Upload PDF</button>
+<div id="pdfList"></div>
+</div>
+
+<!-- CALCULATOR -->
+<div id="calculatorSection" class="card hidden">
+<button class="secondary" onclick="backDashboard()">← Dashboard</button>
+<h2>🧮 Calculator</h2>
+<input id="calcDisplay" placeholder="Example: 25+5*2">
+<div class="grid">
+<button onclick="calcAdd('7')">7</button>
+<button onclick="calcAdd('8')">8</button>
+<button onclick="calcAdd('9')">9</button>
+<button onclick="calcAdd('/')">÷</button>
+<button onclick="calcAdd('4')">4</button>
+<button onclick="calcAdd('5')">5</button>
+<button onclick="calcAdd('6')">6</button>
+<button onclick="calcAdd('*')">×</button>
+<button onclick="calcAdd('1')">1</button>
+<button onclick="calcAdd('2')">2</button>
+<button onclick="calcAdd('3')">3</button>
+<button onclick="calcAdd('-')">−</button>
+<button onclick="calcAdd('0')">0</button>
+<button onclick="calcAdd('.')">.</button>
+<button onclick="calculate()">=</button>
+<button onclick="calcAdd('+')">+</button>
+</div>
+<button class="danger" onclick="clearCalc()">Clear</button>
 </div>
 
 <!-- CALENDAR -->
-<div class="card">
-<h2>📅 Study Calendar</h2>
-<label>Select Date</label>
+<div id="calendarSection" class="card hidden">
+<button class="secondary" onclick="backDashboard()">← Dashboard</button>
+<h2>📅 Calendar & Events</h2>
 <input type="date" id="eventDate">
-
-<input id="eventTitle" placeholder="Enter Event / Study Topic">
-
+<input id="eventName" placeholder="Enter event name">
 <button onclick="addEvent()">Add Event</button>
-
-<h3>Your Events</h3>
 <div id="eventList"></div>
 </div>
 
 <!-- NOTES -->
-<div class="card">
+<div id="notesSection" class="card hidden">
+<button class="secondary" onclick="backDashboard()">← Dashboard</button>
 <h2>📝 My Notes</h2>
-<input id="noteTitle" placeholder="Note Title">
-<textarea id="noteText" rows="4" placeholder="Write your notes here..."></textarea>
-
-<button onclick="addNote()">Save Note</button>
-
-<div id="noteList"></div>
+<textarea id="noteText" rows="5" placeholder="Write your notes here..."></textarea>
+<button onclick="saveNote()">Save Note</button>
+<div id="notesList"></div>
 </div>
 
 <!-- REMINDERS -->
-<div class="card">
-<h2>⏰ Study Reminders</h2>
-
-<input id="reminderTitle" placeholder="Reminder Title">
+<div id="reminderSection" class="card hidden">
+<button class="secondary" onclick="backDashboard()">← Dashboard</button>
+<h2>⏰ Reminders</h2>
+<input id="reminderText" placeholder="Reminder name">
 <input type="datetime-local" id="reminderTime">
-
 <button onclick="addReminder()">Set Reminder</button>
-
 <div id="reminderList"></div>
-<p><small>Reminders work while this website is open. Allow browser notifications if supported.</small></p>
+<p class="small">Reminder alerts work while this website remains open.</p>
 </div>
 
-<!-- PRIVACY -->
-<div class="card">
-<h2>🔒 Privacy Policy</h2>
-<p>
-Sandip Study Hub uses email authentication to provide secure login.
-Your email address is used for authentication.
-Study notes, calendar events and reminders in this version
-are stored locally in your browser.
-We do not intentionally collect or sell your study notes.
-</p>
+<!-- STOPWATCH TIMER -->
+<div id="timerSection" class="card hidden">
+<button class="secondary" onclick="backDashboard()">← Dashboard</button>
+<h2>⏱️ Stopwatch</h2>
+<h2 id="stopwatch">00:00:00</h2>
+<div class="grid">
+<button onclick="startStopwatch()">Start</button>
+<button onclick="stopStopwatch()">Stop</button>
+</div>
+<button class="secondary" onclick="resetStopwatch()">Reset</button>
+
+<hr>
+<h2>⏳ Countdown Timer</h2>
+<input type="number" id="timerMinutes" placeholder="Minutes" min="1">
+<h2 id="countdown">00:00</h2>
+<button onclick="startTimer()">Start Timer</button>
+<button class="danger" onclick="stopTimer()">Stop Timer</button>
 </div>
 
-<!-- TERMS -->
-<div class="card">
-<h2>📜 Terms & Conditions</h2>
-<p>
-By using Sandip Study Hub, you agree to use the application
-responsibly. Keep your login details secure.
-Do not misuse the application. Features may be updated
-or changed. This application is provided for educational purposes.
-</p>
-</div>
-
+</section>
 </div>
 
 <footer>
-© 2026 Sandip Garai. All Rights Reserved.
-<br>Designed with ❤️ for Learning
+© 2026 Study Star. All Rights Reserved.
+<br>
+Designed with ❤️ by Sandip Garai
 </footer>
-
-</div>
 
 <script>
 // SUPABASE CONFIGURATION
-const SUPABASE_URL =
-"https://bsnkqpmhdfifxbzagxnj.supabase.co";
-
-const SUPABASE_KEY =
-"sb_publishable_rfBu8up21JKtCyGMkeEoOA_sYwvguFs";
+const SUPABASE_URL = "https://bsnkqpmhdfifxbzagxnj.supabase.co";
+const SUPABASE_KEY = "sb_publishable_rfBu8up21JKtCyGMkeEoOA_sYwvguFs";
 
 const supabaseClient = window.supabase.createClient(
  SUPABASE_URL,
  SUPABASE_KEY
 );
 
-const $ = id => document.getElementById(id);
+const PDF_BUCKET = "study-pdfs";
 
-function showMessage(text){
- $("message").textContent = text;
+// CLOCK - INDIA TIME
+function updateClock(){
+ const now = new Date();
+ document.getElementById("clock").textContent =
+ new Intl.DateTimeFormat("en-IN",{
+  timeZone:"Asia/Kolkata",
+  dateStyle:"medium",
+  timeStyle:"medium"
+ }).format(now);
 }
+setInterval(updateClock,1000);
+updateClock();
 
-// SEND EMAIL OTP
+// LOGIN
 async function sendOTP(){
+ const email=document.getElementById("email").value.trim();
+ const msg=document.getElementById("loginMessage");
 
- const email = $("email").value.trim();
+ if(!email){msg.textContent="Please enter your email.";return;}
 
- if(!email || !email.includes("@")){
-  showMessage("Please enter a valid Email ID.");
-  return;
- }
+ msg.textContent="Sending OTP...";
 
- $("sendBtn").disabled = true;
- showMessage("Sending OTP...");
+ const {error}=await supabaseClient.auth.signInWithOtp({
+  email,
+  options:{shouldCreateUser:true}
+ });
 
- try{
-  const {error} = await supabaseClient.auth.signInWithOtp({
-   email:email,
-   options:{
-    shouldCreateUser:true
-   }
-  });
-
-  if(error) throw error;
-
-  $("otpArea").classList.remove("hidden");
-  showMessage("OTP sent! Check your email.");
-
- }catch(error){
-  showMessage(error.message);
- }finally{
-  $("sendBtn").disabled = false;
+ if(error){
+  msg.textContent=error.message;
+ }else{
+  msg.textContent="OTP sent. Please check your email.";
+  document.getElementById("otpArea").classList.remove("hidden");
  }
 }
 
-// VERIFY OTP
 async function verifyOTP(){
+ const email=document.getElementById("email").value.trim();
+ const token=document.getElementById("otp").value.trim();
+ const msg=document.getElementById("loginMessage");
 
- const email = $("email").value.trim();
- const token = $("otp").value.trim();
+ if(!token){msg.textContent="Enter the OTP.";return;}
 
- if(!email || !/^\d{8}$/.test(token)){
-  showMessage("Enter your valid 8 digit OTP.");
-  return;
- }
+ msg.textContent="Verifying...";
 
- showMessage("Verifying OTP...");
+ const {data,error}=await supabaseClient.auth.verifyOtp({
+  email,
+  token,
+  type:"email"
+ });
 
- try{
-  const {data,error} = await supabaseClient.auth.verifyOtp({
-   email:email,
-   token:token,
-   type:"email"
-  });
-
-  if(error) throw error;
-
-  if(data.session){
-   openApp(data.user);
-  }
-
- }catch(error){
-  showMessage(error.message);
+ if(error){
+  msg.textContent=error.message;
+ }else{
+  showDashboard();
  }
 }
 
-// OPEN APP
-function openApp(user){
-
- $("authArea").classList.add("hidden");
- $("appArea").classList.remove("hidden");
- $("userEmail").textContent = user.email || "";
-
- loadAll();
+function showDashboard(){
+ document.getElementById("loginPage").classList.add("hidden");
+ document.getElementById("policyPage").classList.add("hidden");
+ document.getElementById("dashboard").classList.remove("hidden");
+ loadPDFs();
+ loadEvents();
+ loadNotes();
+ loadReminders();
 }
 
-// LOGOUT
 async function logout(){
-
  await supabaseClient.auth.signOut();
-
- $("appArea").classList.add("hidden");
- $("authArea").classList.remove("hidden");
- $("otpArea").classList.add("hidden");
- $("email").value="";
- $("otp").value="";
- showMessage("You have logged out.");
-}
-
-// CHECK EXISTING SESSION
-async function checkSession(){
-
- const {data} = await supabaseClient.auth.getSession();
-
- if(data.session){
-  openApp(data.session.user);
- }
+ document.getElementById("dashboard").classList.add("hidden");
+ document.getElementById("loginPage").classList.remove("hidden");
 }
 
 supabaseClient.auth.onAuthStateChange((event,session)=>{
-
- if(event==="SIGNED_OUT"){
-  $("appArea").classList.add("hidden");
-  $("authArea").classList.remove("hidden");
+ if(session){
+  showDashboard();
  }
-
 });
 
-// LOCAL STORAGE
-function getData(key){
- try{
-  return JSON.parse(localStorage.getItem("sh_"+key)) || [];
- }catch(e){
-  return [];
+// POLICY
+function showPolicy(type){
+ document.getElementById("loginPage").classList.add("hidden");
+ document.getElementById("policyPage").classList.remove("hidden");
+
+ const content=document.getElementById("policyContent");
+
+ if(type==="privacy"){
+ content.innerHTML=`
+ <h2>Privacy Policy</h2>
+ <p>Study Star respects your privacy.</p>
+ <h3>Information</h3>
+ <p>Your email address is used for login and authentication.</p>
+ <h3>PDFs and Notes</h3>
+ <p>PDF files are stored in the configured Supabase Storage service. Notes, calendar events and reminders in this version are saved in your browser on your device.</p>
+ <h3>Security</h3>
+ <p>Never share your OTP or login details with anyone.</p>
+ <h3>Contact</h3>
+ <p>Email: sandipgarai950@gmail.com</p>
+ <p>This policy may be updated when app features change.</p>`;
+ }else{
+ content.innerHTML=`
+ <h2>Terms & Conditions</h2>
+ <p>Welcome to Study Star.</p>
+ <h3>1. Use</h3>
+ <p>Use this app for personal study and educational purposes.</p>
+ <h3>2. Account</h3>
+ <p>You are responsible for keeping your login OTP private.</p>
+ <h3>3. Uploaded Files</h3>
+ <p>Only upload PDFs that you have permission to store and use.</p>
+ <h3>4. Availability</h3>
+ <p>Features may change or temporarily become unavailable.</p>
+ <h3>5. Contact</h3>
+ <p>Email: sandipgarai950@gmail.com</p>
+ <p>By using Study Star, you agree to these terms.</p>`;
  }
 }
+function backToLogin(){
+ document.getElementById("policyPage").classList.add("hidden");
+ document.getElementById("loginPage").classList.remove("hidden");
+}
 
-function saveData(key,data){
- localStorage.setItem("sh_"+key,JSON.stringify(data));
+// NAVIGATION
+function openSection(id){
+ document.querySelectorAll("#dashboard > .card").forEach(el=>{
+  if(el.id && el.id!=="")el.classList.add("hidden");
+ });
+ document.getElementById(id).classList.remove("hidden");
+}
+function backDashboard(){
+ document.querySelectorAll("#dashboard > .card").forEach(el=>{
+  el.classList.remove("hidden");
+ });
+ ["pdfSection","calculatorSection","calendarSection",
+  "notesSection","reminderSection","timerSection"].forEach(id=>{
+  document.getElementById(id).classList.add("hidden");
+ });
 }
 
 // THEME
-function setTheme(theme){
+function changeTheme(theme){
  document.body.className=theme;
- localStorage.setItem("sh_theme",theme);
+ localStorage.setItem("studyTheme",theme);
 }
+changeTheme(localStorage.getItem("studyTheme")||"");
 
-setTheme(localStorage.getItem("sh_theme") || "");
+// PDF LIBRARY
+async function uploadPDF(){
+ const file=document.getElementById("pdfFile").files[0];
+ if(!file){alert("Choose a PDF first.");return;}
+ if(file.type!=="application/pdf"){alert("Only PDF files are allowed.");return;}
 
-// CALENDAR
-function addEvent(){
+ const {data:{user}}=await supabaseClient.auth.getUser();
+ if(!user){alert("Please login again.");return;}
 
- const date=$("eventDate").value;
- const title=$("eventTitle").value.trim();
+ const path=user.id+"/"+Date.now()+"_"+file.name;
 
- if(!date || !title){
-  alert("Enter date and event.");
-  return;
- }
-
- const events=getData("events");
-
- events.push({
-  id:Date.now(),
-  date,title
+ const {error}=await supabaseClient.storage
+ .from(PDF_BUCKET).upload(path,file,{
+  contentType:"application/pdf",
+  upsert:false
  });
 
- saveData("events",events);
+ if(error){alert(error.message);return;}
 
- $("eventTitle").value="";
- renderEvents();
+ alert("PDF uploaded successfully!");
+ document.getElementById("pdfFile").value="";
+ loadPDFs();
 }
 
-function deleteEvent(id){
+async function loadPDFs(){
+ const list=document.getElementById("pdfList");
+ if(!list)return;
 
- const events=getData("events").filter(x=>x.id!==id);
- saveData("events",events);
- renderEvents();
+ const {data:{user}}=await supabaseClient.auth.getUser();
+ if(!user)return;
+
+ const {data,error}=await supabaseClient.storage
+ .from(PDF_BUCKET).list(user.id);
+
+ if(error){list.textContent=error.message;return;}
+
+ list.innerHTML="";
+ (data||[]).forEach(file=>{
+  const path=user.id+"/"+file.name;
+  const div=document.createElement("div");
+  div.className="item";
+
+  const name=document.createElement("p");
+  name.textContent=file.name;
+
+  const view=document.createElement("button");
+  view.textContent="View PDF";
+  view.onclick=()=>viewPDF(path);
+
+  const del=document.createElement("button");
+  del.textContent="Delete PDF";
+  del.className="danger";
+  del.onclick=()=>deletePDF(path);
+
+  div.append(name,view,del);
+  list.appendChild(div);
+ });
 }
 
-function renderEvents(){
+async function viewPDF(path){
+ const {data,error}=await supabaseClient.storage
+ .from(PDF_BUCKET).createSignedUrl(path,300);
 
- const events=getData("events");
+ if(error){alert(error.message);return;}
+ window.open(data.signedUrl,"_blank");
+}
 
- $("eventList").innerHTML=events.length
- ?events.map(e=>`
- <div class="item">
- <b>${escapeHTML(e.title)}</b><br>
- ${escapeHTML(e.date)}
- <button class="danger" onclick="deleteEvent(${e.id})">Delete</button>
- </div>`).join("")
- :"<p>No events added.</p>";
+async function deletePDF(path){
+ if(!confirm("Delete this PDF?"))return;
 
- $("eventCount").textContent=events.length;
+ const {error}=await supabaseClient.storage
+ .from(PDF_BUCKET).remove([path]);
+
+ if(error){alert(error.message);return;}
+ loadPDFs();
+}
+
+// CALENDAR
+function getEvents(){
+ return JSON.parse(localStorage.getItem("studyEvents")||"[]");
+}
+function addEvent(){
+ const date=document.getElementById("eventDate").value;
+ const name=document.getElementById("eventName").value.trim();
+ if(!date||!name){alert("Enter date and event name.");return;}
+
+ const events=getEvents();
+ events.push({date,name});
+ localStorage.setItem("studyEvents",JSON.stringify(events));
+
+ document.getElementById("eventName").value="";
+ loadEvents();
+}
+function loadEvents(){
+ const list=document.getElementById("eventList");
+ if(!list)return;
+ list.innerHTML="";
+ getEvents().forEach((e,i)=>{
+  const div=document.createElement("div");
+  div.className="item";
+  div.textContent=e.date+" - "+e.name+" ";
+
+  const del=document.createElement("button");
+  del.textContent="Delete";
+  del.className="danger";
+  del.onclick=()=>{
+   const events=getEvents();
+   events.splice(i,1);
+   localStorage.setItem("studyEvents",JSON.stringify(events));
+   loadEvents();
+  };
+  div.appendChild(del);
+  list.appendChild(div);
+ });
 }
 
 // NOTES
-function addNote(){
+function getNotes(){
+ return JSON.parse(localStorage.getItem("studyNotes")||"[]");
+}
+function saveNote(){
+ const text=document.getElementById("noteText").value.trim();
+ if(!text){alert("Write a note first.");return;}
 
- const title=$("noteTitle").value.trim();
- const text=$("noteText").value.trim();
+ const notes=getNotes();
+ notes.push({text,created:new Date().toLocaleString("en-IN")});
+ localStorage.setItem("studyNotes",JSON.stringify(notes));
 
- if(!title || !text){
-  alert("Enter note title and text.");
-  return;
- }
+ document.getElementById("noteText").value="";
+ loadNotes();
+}
+function loadNotes(){
+ const list=document.getElementById("notesList");
+ if(!list)return;
+ list.innerHTML="";
 
- const notes=getData("notes");
+ getNotes().forEach((note,i)=>{
+  const div=document.createElement("div");
+  div.className="item";
+  const p=document.createElement("p");
+  p.textContent=note.text+" ("+note.created+")";
 
- notes.push({
-  id:Date.now(),title,text
+  const del=document.createElement("button");
+  del.textContent="Delete";
+  del.className="danger";
+  del.onclick=()=>{
+   const notes=getNotes();
+   notes.splice(i,1);
+   localStorage.setItem("studyNotes",JSON.stringify(notes));
+   loadNotes();
+  };
+  div.append(p,del);
+  list.appendChild(div);
  });
-
- saveData("notes",notes);
-
- $("noteTitle").value="";
- $("noteText").value="";
-
- renderNotes();
-}
-
-function deleteNote(id){
-
- const notes=getData("notes").filter(n=>n.id!==id);
- saveData("notes",notes);
- renderNotes();
-}
-
-function renderNotes(){
-
- const notes=getData("notes");
-
- $("noteList").innerHTML=notes.length
- ?notes.map(n=>`
- <div class="item">
- <b>${escapeHTML(n.title)}</b>
- <p>${escapeHTML(n.text)}</p>
- <button class="danger" onclick="deleteNote(${n.id})">Delete</button>
- </div>`).join("")
- :"<p>No notes saved.</p>";
-
- $("noteCount").textContent=notes.length;
 }
 
 // REMINDERS
+function getReminders(){
+ return JSON.parse(localStorage.getItem("studyReminders")||"[]");
+}
 function addReminder(){
+ const name=document.getElementById("reminderText").value.trim();
+ const time=document.getElementById("reminderTime").value;
 
- const title=$("reminderTitle").value.trim();
- const time=$("reminderTime").value;
+ if(!name||!time){alert("Enter reminder and time.");return;}
 
- if(!title || !time){
-  alert("Enter reminder and time.");
-  return;
- }
-
- const reminders=getData("reminders");
-
+ const reminders=getReminders();
  reminders.push({
-  id:Date.now(),
-  title,time,
+  name,time,
   notified:false
  });
+ localStorage.setItem("studyReminders",JSON.stringify(reminders));
 
- saveData("reminders",reminders);
-
- $("reminderTitle").value="";
- $("reminderTime").value="";
-
- renderReminders();
- checkReminders();
+ document.getElementById("reminderText").value="";
+ loadReminders();
 }
+function loadReminders(){
+ const list=document.getElementById("reminderList");
+ if(!list)return;
+ list.innerHTML="";
 
-function deleteReminder(id){
+ getReminders().forEach((r,i)=>{
+  const div=document.createElement("div");
+  div.className="item";
+  div.textContent=r.name+" - "+new Date(r.time).toLocaleString();
 
- const reminders=getData("reminders").filter(r=>r.id!==id);
- saveData("reminders",reminders);
- renderReminders();
+  const del=document.createElement("button");
+  del.textContent="Delete";
+  del.className="danger";
+  del.onclick=()=>{
+   const reminders=getReminders();
+   reminders.splice(i,1);
+   localStorage.setItem("studyReminders",JSON.stringify(reminders));
+   loadReminders();
+  };
+  div.appendChild(del);
+  list.appendChild(div);
+ });
 }
-
-function renderReminders(){
-
- const reminders=getData("reminders");
-
- $("reminderList").innerHTML=reminders.length
- ?reminders.map(r=>`
- <div class="item">
- <b>${escapeHTML(r.title)}</b><br>
- ${escapeHTML(r.time)}
- <button class="danger" onclick="deleteReminder(${r.id})">Delete</button>
- </div>`).join("")
- :"<p>No reminders set.</p>";
-
- $("reminderCount").textContent=reminders.length;
-}
-
-async function checkReminders(){
-
- const reminders=getData("reminders");
+setInterval(()=>{
+ const reminders=getReminders();
+ const now=Date.now();
  let changed=false;
 
- if("Notification" in window &&
-    Notification.permission==="default"){
-  try{await Notification.requestPermission()}catch(e){}
- }
-
  reminders.forEach(r=>{
-
-  if(!r.notified && new Date(r.time).getTime()<=Date.now()){
-
-   alert("Study Reminder: "+r.title);
-
-   if("Notification" in window &&
-      Notification.permission==="granted"){
-    new Notification("Study Reminder",{body:r.title});
-   }
-
+  if(!r.notified && new Date(r.time).getTime()<=now){
+   alert("⏰ Reminder: "+r.name);
    r.notified=true;
    changed=true;
   }
-
  });
-
- if(changed) saveData("reminders",reminders);
- renderReminders();
-}
-
-// HTML SAFETY
-function escapeHTML(value){
- return String(value).replace(/[&<>"']/g,c=>({
-  "&":"&amp;",
-  "<":"&lt;",
-  ">":"&gt;",
-  '"':"&quot;",
-  "'":"&#39;"
- })[c]);
-}
-
-// LOAD EVERYTHING
-function loadAll(){
- renderEvents();
- renderNotes();
- renderReminders();
- checkReminders();
-}
-
-setInterval(()=>{
- if(!$("appArea").classList.contains("hidden")){
-  checkReminders();
+ if(changed){
+  localStorage.setItem("studyReminders",JSON.stringify(reminders));
+  loadReminders();
  }
-},30000);
+},10000);
 
-checkSession();
+// CALCULATOR - SAFE BASIC ARITHMETIC
+function calcAdd(value){
+ document.getElementById("calcDisplay").value+=value;
+}
+function clearCalc(){
+ document.getElementById("calcDisplay").value="";
+}
+function calculate(){
+ const display=document.getElementById("calcDisplay");
+ const expression=display.value.replace(/\s/g,"");
 
-</script>
-</body>
- </html>
+ if(!/^[0-9+\-*/().]+$/.test(expression)){
+  display.value="Invalid";
+  return;
+ }
+
+ try{
+  const result=parseMath(expression);
+  if(!Number.isFinite(result))throw new Error();
+  display.value=String(result);
+ }catch{
+  display.value="Error";
+ }
+}
+function parseMath(s){
+ let pos=0;
+ function number(){
+  if(s[pos]==="("){
+   pos++;
+   const v=addSub();
+   if(s[pos]!==")")throw Error();
+   pos++;
+   return v;
+  }
+  let start=pos;
+  while(/[0-9.]/.test(s[pos]||""))pos++;
+  if(start===pos)throw Error();
+  const n=Number(s.slice(start,pos));
+  if(!Number.isFinite(n))throw Error();
+  return n;
+ }
+ function unary(){
+  if(s[pos]==="+"){pos++;return unary();}
+  if(s[pos]==="-"){pos++;return -unary();}
+  return number();
+ }
+ function mulDiv(){
+  let v=unary();
+  while(s[pos]==="*"||s[pos]==="/"){
+   const op=s[pos++];
+   const n=unary();
+   v=op==="*"?v*n:v/n;
+  }
+  return v;
+ }
+ function addSub(){
+  let v=mulDiv();
+  while(s[pos]==="+"||s[pos]==="-"){
+   const op=s[pos++];
+   const n=mulDiv();
+   v=op==="+"?v+n:v-n;
+  }
+  return v;
+ }
+ const result=addSub();
+ if(pos!==s.length)throw Error();
+ return result;
+}
+
+// STOPWATCH
+let watchSeconds=0;
+let watchInterval=null;
+
+function showStopwatch(){
+ const h=String(Math.floor(watchSeconds/3600)).padStart(2,"0");
+ const m=String(Math.floor((watchSeconds%3600)/60)).padStart(2,"0");
+ const s=String(watchSeconds%60).padStart(2,"0");
+ document.getElementById("stopwatch").textContent=h+":"+m+":"+s;
+}
+function startStopwatch(){
+ if(watchInterval)return;
+ watchInterval=setInterval(()=>{
+  watchSeconds++;
+  showStopwatch();
+ },1000);
+}
+function stopStopwatch(){
+ clearInterval(watchInterval);
+ watchInterval=null;
+}
+function resetStopwatch(){
+ stopStopwatch();
+ watchSeconds=0;
+ showStopwatch();
+}
+
+// COUNTDOWN TIMER
+let timerInterval=null;
+let remaining=0;
+
+function showCountdown(){
+ const m=String(Math.floor(remaining/60)).padStart(2,"0");
+ const s=String(remaining%60).padStart(2,"0");
+ document.getElementById("countdown").textContent=m+":"+s;
+}
+function startTimer(){
+ stopTimer();
+ const minutes=Number(document.getElementById("timerMinutes").value);
+ if(!Number.isInteger(minutes)||minutes<1){
+  alert("Enter a valid number of minutes.");
+  return;
+ }
+ remaining=minutes*60;
+ showCountdown();
+
+ timerInterval=setInterval(()=>{
+  remaining--;
+  showCountdown();
+  if(remaining<=0){
+   stopTimer();
+   alert("⏰ Timer finished!");
+  }
+ },1000);
+}
+function stopTimer(){
+ clearInterval(timerInterval);
+ timerInterval=null;
+}
+
+// RESTORE SESSION
+supabaseClient.auth.getSession(
