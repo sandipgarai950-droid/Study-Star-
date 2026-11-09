@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101827">
+<title>Sandip Study Hub</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+<style>
+:root{
+ --bg:#101827;--card:#1d293b;--text:white;
+ --accent:#38bdf8;--muted:#b8c4d6;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font-family:Arial,sans-serif;
+}
+header{
+ text-align:center;padding:22px;
+ background:var(--card);
+ border-bottom:2px solid var(--accent);
+}
+header h1{margin:0 0 8px}
+main{max-width:850px;margin:auto;padding:15px}
+.card{
+ background:var(--card);padding:17px;
+ margin:15px 0;border-radius:15px;
+ border:1px solid #ffffff20;
+}
+h2{font-size:19px;margin-top:0}
+button{
+ background:var(--accent);color:#07111f;
+ border:0;padding:11px 15px;
+ border-radius:9px;font-weight:bold;
+ margin:4px;cursor:pointer;
+}
+input,textarea,select{
+ width:100%;padding:12px;margin:7px 0;
+ border:1px solid #ffffff30;border-radius:9px;
+ background:var(--bg);color:var(--text);
+ font-size:15px;
+}
+textarea{min-height:100px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.grid button{width:100%;margin:0}
+.small{color:var(--muted);font-size:13px}
+#clock,#stopwatch{text-align:center;font-size:30px;font-weight:bold}
+.item{background:var(--bg);padding:12px;margin:9px 0;border-radius:9px;overflow-wrap:anywhere}
+.danger{background:#ef4444;color:white}
+footer{text-align:center;padding:20px;color:var(--muted)}
+a{color:var(--accent)}
+@media(max-width:450px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+
+<body>
+<header>
+<h1>📚 Sandip Study Hub</h1>
+<p>Your Personal Study Space</p>
+</header>
+
+<main>
+
+<section class="card">
+<h2>👤 Google Login</h2>
+<p id="loginStatus" class="small">Checking login...</p>
+<button onclick="login()">Login with Google</button>
+<button onclick="logout()" class="danger">Logout</button>
+</section>
+
+<section class="card">
+<h2>🎨 Choose Theme</h2>
+<select id="theme" onchange="changeTheme(this.value)">
+<option value="dark">Dark</option>
+<option value="bright">Bright</option>
+<option value="green">Green</option>
+<option value="blue">Blue</option>
+<option value="red">Red</option>
+</select>
+</section>
+
+<section class="card">
+<h2>📅 Date & Calendar</h2>
+<div id="clock"></div>
+<p id="today" class="small"></p>
+<input type="date" id="calendarDate">
+<p id="selectedDate" class="small">Select a date.</p>
+</section>
+
+<section class="card">
+<h2>⏱️ Stopwatch</h2>
+<div id="stopwatch">00:00:00</div>
+<div class="grid">
+<button onclick="startWatch()">Start</button>
+<button onclick="stopWatch()">Pause</button>
+<button onclick="resetWatch()">Reset</button>
+</div>
+</section>
+
+<section class="card">
+<h2>🧮 Calculator</h2>
+<input id="calcDisplay" placeholder="Example: 25+30*2">
+<div class="grid">
+<button onclick="calculate()">Calculate</button>
+<button onclick="clearCalc()">Clear</button>
+</div>
+<p id="calcResult"></p>
+</section>
+
+<section class="card">
+<h2>📝 Study Notes</h2>
+<input id="noteTitle" placeholder="Note title">
+<textarea id="noteBody" placeholder="Write your notes..."></textarea>
+<button onclick="saveNote()">Save Note to Cloud</button>
+<button onclick="loadNotes()">Refresh Notes</button>
+<div id="notesList"></div>
+</section>
+
+<section class="card">
+<h2>📄 PDF Library</h2>
+<input type="file" id="pdfFile" accept="application/pdf">
+<button onclick="uploadFile('pdfFile')">Upload PDF</button>
+<div id="pdfList"></div>
+</section>
+
+<section class="card">
+<h2>🎬 Video Library</h2>
+<input type="file" id="videoFile" accept="video/*">
+<button onclick="uploadFile('videoFile')">Upload Video</button>
+<div id="videoList"></div>
+<p class="small">Maximum file size: 50 MB per file.</p>
+</section>
+
+</main>
+
+<footer>© 2026 Sandip Study Hub</footer>
+
+<script>
+// SUPABASE CONNECTION
+const SUPABASE_URL = "https://bsnkqpmhdfifxbzagxnj.supabase.co";
+const SUPABASE_KEY = "sb_publishable_rfBu8up21JKtCyGMkeEoOA_sYwvguFs";
+
+const client = window.supabase.createClient(
+ SUPABASE_URL,
+ SUPABASE_KEY
+);
+
+let currentUser=null;
+
+// GOOGLE LOGIN
+async function login(){
+ const {error}=await client.auth.signInWithOAuth({
+  provider:"google",
+  options:{redirectTo:window.location.origin}
+ });
+ if(error) alert(error.message);
+}
+
+// LOGOUT
+async function logout(){
+ const {error}=await client.auth.signOut();
+ if(error) alert(error.message);
+}
+
+// LOGIN STATUS
+async function checkLogin(){
+ const {data,error}=await client.auth.getSession();
+ if(error) console.error(error);
+ currentUser=data.session?.user||null;
+ updateLoginStatus();
+
+ if(currentUser){
+  loadNotes();
+  loadFiles("pdf");
+  loadFiles("video");
+ }
+}
+
+function updateLoginStatus(){
+ document.getElementById("loginStatus").textContent=
+ currentUser?"Logged in: "+(currentUser.email||"Google user"):
+ "You are not logged in.";
+}
+
+client.auth.onAuthStateChange((_event,session)=>{
+ currentUser=session?.user||null;
+ updateLoginStatus();
+});
+
+// CLOCK
+function updateClock(){
+ const now=new Date();
+ document.getElementById("clock").textContent=
+ now.toLocaleTimeString();
+ document.getElementById("today").textContent=
+ now.toLocaleDateString(undefined,{
+  weekday:"long",year:"numeric",month:"long",day:"numeric"
+ });
+}
+setInterval(updateClock,1000);
+updateClock();
+
+document.getElementById("calendarDate").onchange=function(){
+ document.getElementById("selectedDate").textContent=
+ this.value?"Selected date: "+this.value:"Select a date.";
+};
+
+// STOPWATCH
+let seconds=0,watchTimer=null;
+
+function displayWatch(){
+ const h=String(Math.floor(seconds/3600)).padStart(2,"0");
+ const m=String(Math.floor(seconds%3600/60)).padStart(2,"0");
+ const s=String(seconds%60).padStart(2,"0");
+ document.getElementById("stopwatch").textContent=
+ `${h}:${m}:${s}`;
+}
+function startWatch(){
+ if(watchTimer)return;
+ watchTimer=setInterval(()=>{seconds++;displayWatch()},1000);
+}
+function stopWatch(){
+ clearInterval(watchTimer);watchTimer=null;
+}
+function resetWatch(){
+ stopWatch();seconds=0;displayWatch();
+}
+
+// CALCULATOR
+function calculate(){
+ const expression=document.getElementById("calcDisplay").value.trim();
+ const result=document.getElementById("calcResult");
+
+ if(!expression){result.textContent="Enter a calculation.";return}
+ if(!/^[0-9+\-*/().\s]+$/.test(expression)){
+  result.textContent="Invalid calculation.";return;
+ }
+ try{
+  const answer=Function('"use strict";return ('+expression+')')();
+  result.textContent=Number.isFinite(answer)?
+   "Result: "+answer:"Invalid calculation.";
+ }catch(e){result.textContent="Invalid calculation."}
+}
+function clearCalc(){
+ document.getElementById("calcDisplay").value="";
+ document.getElementById("calcResult").textContent="";
+}
+
+// SAVE NOTES
+async function saveNote(){
+ if(!currentUser){alert("Please login first.");return}
+
+ const title=document.getElementById("noteTitle").value.trim();
+ const body=document.getElementById("noteBody").value.trim();
+
+ if(!title||!body){alert("Enter title and note.");return}
+
+ const {error}=await client.from("notes").insert({
+  user_id:currentUser.id,title,body
+ });
+
+ if(error){alert(error.message);return}
+
+ document.getElementById("noteTitle").value="";
+ document.getElementById("noteBody").value="";
+ alert("Note saved successfully!");
+ loadNotes();
+}
+
+// LOAD NOTES
+async function loadNotes(){
+ if(!currentUser)return;
+
+ const list=document.getElementById("notesList");
+ list.textContent="Loading...";
+
+ const {data,error}=await client.from("notes")
+  .select("*").order("created_at",{ascending:false});
+
+ if(error){list.textContent=error.message;return}
+
+ list.textContent="";
+ if(!data.length){list.textContent="No notes yet.";return}
+
+ data.forEach(note=>{
+  const item=document.createElement("div");
+  item.className="item";
+
+  const heading=document.createElement("h3");
+  heading.textContent=note.title;
+
+  const content=document.createElement("p");
+  content.textContent=note.body;
+
+  const del=document.createElement("button");
+  del.textContent="Delete";
+  del.className="danger";
+  del.onclick=()=>deleteNote(note.id);
+
+  item.append(heading,content,del);
+  list.appendChild(item);
+ });
+}
+
+async function deleteNote(id){
+ if(!currentUser||!confirm("Delete this note?"))return;
+
+ const {error}=await client.from("notes").delete().eq("id",id);
+ if(error){alert(error.message);return}
+ loadNotes();
+}
+
+// UPLOAD PDF / VIDEO
+async function uploadFile(inputId){
+ if(!currentUser){alert("Please login first.");return}
+
+ const input=document.getElementById(inputId);
+ const file=input.files[0];
+
+ if(!file){alert("Choose a file first.");return}
+ if(file.size>50*1024*1024){alert("File must be below 50 MB.");return}
+
+ const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+ const path=currentUser.id+"/"+Date.now()+"_"+safeName;
+
+ const {error}=await client.storage.from("study-files")
+  .upload(path,file,{upsert:false});
+
+ if(error){alert("Upload failed: "+error.message);return}
+
+ alert("File uploaded!");
+ input.value="";
+ loadFiles(inputId==="pdfFile"?"pdf":"video");
+}
+
+// LOAD PRIVATE FILES
+async function loadFiles(type){
+ if(!currentUser)return;
+
+ const list=document.getElementById(type==="pdf"?"pdfList":"videoList");
+ list.textContent="Loading files...";
+
+ const {data,error}=await client.storage.from("study-files")
+  .list(currentUser.id,{
+   limit:100,sortBy:{column:"created_at",order:"desc"}
+  });
+
+ if(error){list.textContent=error.message;return}
+
+ list.textContent="";
+ const files=(data||[]).filter(file=>{
+  const name=(file.name||"").toLowerCase();
+  return type==="pdf"?name.endsWith(".pdf"):
+   /\.(mp4|webm|mov|m4v|3gp)$/.test(name);
+ });
+
+ if(!files.length){list.textContent="No files uploaded.";return}
+
+ for(const file of files){
+  const path=currentUser.id+"/"+file.name;
+  const {data:urlData,error:urlError}=await client.storage
+   .from("study-files").createSignedUrl(path,3600);
+
+  const item=document.createElement("div");
+  item.className="item";
+
+  const label=document.createElement("p");
+  label.textContent=file.name;
+  item.appendChild(label);
+
+  if(!urlError){
+   const link=document.createElement("a");
+   link.href=urlData.signedUrl;
+   link.target="_blank";
+   link.rel="noopener";
+   link.textContent=type==="pdf"?"Open PDF":"Open Video";
+   item.appendChild(link);
+  }else{
+   const msg=document.createElement("p");
+   msg.textContent="Could not create file link.";
+   item.appendChild(msg);
+  }
+
+  const del=document.createElement("button");
+  del.textContent="Delete File";
+  del.className="danger";
+  del.onclick=()=>deleteFile(path,type);
+  item.appendChild(del);
+
+  list.appendChild(item);
+ }
+}
+
+async function deleteFile(path,type){
+ if(!currentUser||!confirm("Delete this file?"))return;
+
+ const {error}=await client.storage.from("study-files").remove([path]);
+ if(error){alert(error.message);return}
+ loadFiles(type);
+}
+
+// THEMES
+const themes={
+ dark:{bg:"#101827",card:"#1d293b",text:"#ffffff",accent:"#38bdf8",muted:"#b8c4d6"},
+ bright:{bg:"#f1f5f9",card:"#ffffff",text:"#172033",accent:"#f59e0b",muted:"#526174"},
+ green:{bg:"#092e25",card:"#124536",text:"#ffffff",accent:"#4ade80",muted:"#c0e8d1"},
+ blue:{bg:"#071d3b",card:"#12345a",text:"#ffffff",accent:"#60a5fa",muted:"#c2d9f5"},
+ red:{bg:"#351313",card:"#542020",text:"#ffffff",accent:"#fb7185",muted:"#f6c4c4"}
+};
+
+function changeTheme(name){
+ const t=themes[name]||themes.dark;
+ const root=document.documentElement;
+
+ Object.keys(t).forEach(key=>{
+  root.style.setProperty("--"+key,t[key]);
+ });
+ localStorage.setItem("studyTheme",name);
+}
+
+const savedTheme=localStorage.getItem("studyTheme")||"dark";
+document.getElementById("theme").value=savedTheme;
+changeTheme(savedTheme);
+
+// START
+checkLogin();
+displayWatch();
+</script>
+</body>
+  </html>
+  
