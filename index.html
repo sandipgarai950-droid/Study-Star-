@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,429 +7,775 @@
 <meta name="theme-color" content="#101827">
 <title>Sandip Study Hub</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-:root{
- --bg:#101827;--card:#1d293b;--text:white;
- --accent:#38bdf8;--muted:#b8c4d6;
-}
 *{box-sizing:border-box}
 body{
- margin:0;background:var(--bg);color:var(--text);
- font-family:Arial,sans-serif;
+ margin:0;font-family:Arial,sans-serif;
+ background:#101827;color:white;
+ transition:.3s;
 }
-header{
- text-align:center;padding:22px;
- background:var(--card);
- border-bottom:2px solid var(--accent);
-}
-header h1{margin:0 0 8px}
-main{max-width:850px;margin:auto;padding:15px}
-.card{
- background:var(--card);padding:17px;
- margin:15px 0;border-radius:15px;
- border:1px solid #ffffff20;
-}
-h2{font-size:19px;margin-top:0}
+button,input,textarea,select{font:inherit}
 button{
- background:var(--accent);color:#07111f;
- border:0;padding:11px 15px;
- border-radius:9px;font-weight:bold;
- margin:4px;cursor:pointer;
+ border:0;border-radius:9px;padding:11px 15px;
+ background:#2878e8;color:white;cursor:pointer;
 }
+button:disabled{opacity:.5}
+a{color:#62b5ff}
+.hidden{display:none!important}
+header{
+ padding:18px;text-align:center;
+ background:#17243a;
+ border-bottom:1px solid #30415b;
+}
+header h1{margin:5px;font-size:25px}
+.container{max-width:900px;margin:auto;padding:15px}
+.card{
+ background:#1b2940;padding:17px;
+ border-radius:14px;margin:14px 0;
+ border:1px solid #34445d;
+}
+.card h2{margin-top:0}
 input,textarea,select{
  width:100%;padding:12px;margin:7px 0;
- border:1px solid #ffffff30;border-radius:9px;
- background:var(--bg);color:var(--text);
- font-size:15px;
+ border-radius:8px;border:1px solid #52627b;
+ background:#111c2e;color:white;
 }
-textarea{min-height:100px}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-.grid button{width:100%;margin:0}
-.small{color:var(--muted);font-size:13px}
-#clock,#stopwatch{text-align:center;font-size:30px;font-weight:bold}
-.item{background:var(--bg);padding:12px;margin:9px 0;border-radius:9px;overflow-wrap:anywhere}
-.danger{background:#ef4444;color:white}
-footer{text-align:center;padding:20px;color:var(--muted)}
-a{color:var(--accent)}
-@media(max-width:450px){.grid{grid-template-columns:1fr}}
+textarea{min-height:100px;resize:vertical}
+.grid{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:12px;
+}
+.app-button{
+ display:block;text-align:center;padding:18px 8px;
+ border-radius:12px;background:#243956;
+ color:white;text-decoration:none;
+ border:1px solid #435b7a;
+}
+.small{font-size:13px;color:#b8c6d9}
+.center{text-align:center}
+.login-box{
+ max-width:440px;margin:45px auto;padding:20px;
+}
+.legal-links{text-align:center;padding:20px 5px}
+.legal-links a{margin:0 8px;text-decoration:none}
+.legal-page{
+ position:fixed;inset:0;z-index:1000;
+ overflow-y:auto;background:#101827;
+ padding:22px;color:white;
+}
+.legal-page h1{color:#62b5ff}
+.legal-page h2{color:#68d6a0;margin-top:25px}
+.legal-page p,.legal-page li{line-height:1.7}
+.back-btn{margin-bottom:20px}
+.item{
+ padding:12px;margin:8px 0;background:#263650;
+ border-radius:9px;overflow-wrap:anywhere;
+}
+.item button{margin:4px}
+footer{text-align:center;padding:20px;color:#9eabc0}
+.theme-bright{background:#edf2f8;color:#152238}
+.theme-bright header,.theme-bright .card{background:white;color:#152238}
+.theme-bright input,.theme-bright textarea,.theme-bright select{
+ background:#f3f5f8;color:#152238
+}
+.theme-green{background:#09251b;color:white}
+.theme-green header,.theme-green .card{background:#123c2b}
+.theme-blue{background:#071d3a;color:white}
+.theme-blue header,.theme-blue .card{background:#12335b}
+.theme-red{background:#351313;color:white}
+.theme-red header,.theme-red .card{background:#572020}
+@media(max-width:500px){
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .container{padding:10px}
+}
 </style>
 </head>
 
 <body>
-<header>
-<h1>📚 Sandip Study Hub</h1>
-<p>Your Personal Study Space</p>
-</header>
 
-<main>
+<!-- LOGIN SCREEN -->
+<section id="loginScreen">
+ <header>
+  <h1>📚 Sandip Study Hub</h1>
+  <p>Your Smart Study Companion</p>
+ </header>
 
-<section class="card">
-<h2>👤 Google Login</h2>
-<p id="loginStatus" class="small">Checking login...</p>
-<button onclick="login()">Login with Google</button>
-<button onclick="logout()" class="danger">Logout</button>
+ <div class="login-box">
+  <div class="card center">
+   <h2>Welcome to Sandip Study Hub</h2>
+   <p class="small">Sign in with Google to access your study dashboard.</p>
+   <button id="loginBtn" onclick="googleLogin()" style="width:100%">
+    🌐 Continue with Google
+   </button>
+   <p id="loginMessage" class="small"></p>
+  </div>
+
+  <div class="legal-links">
+   <a href="#" onclick="openLegal('terms');return false;">Terms & Conditions</a>
+   |
+   <a href="#" onclick="openLegal('privacy');return false;">Privacy Policy</a>
+  </div>
+ </div>
 </section>
 
-<section class="card">
-<h2>🎨 Choose Theme</h2>
-<select id="theme" onchange="changeTheme(this.value)">
-<option value="dark">Dark</option>
-<option value="bright">Bright</option>
-<option value="green">Green</option>
-<option value="blue">Blue</option>
-<option value="red">Red</option>
-</select>
+<!-- DASHBOARD -->
+<section id="dashboard" class="hidden">
+ <header>
+  <h1>📚 Sandip Study Hub</h1>
+  <p id="welcomeText">Welcome</p>
+  <button onclick="logout()">Logout</button>
+ </header>
+
+ <main class="container">
+
+  <div class="card center">
+   <h2 id="clock">--:--:--</h2>
+   <p id="todayDate"></p>
+  </div>
+
+  <div class="card">
+   <h2>🎨 Choose Theme</h2>
+   <select id="themeSelect" onchange="changeTheme(this.value)">
+    <option value="dark">Dark</option>
+    <option value="bright">Bright</option>
+    <option value="green">Green</option>
+    <option value="blue">Blue</option>
+    <option value="red">Red</option>
+   </select>
+  </div>
+
+  <div class="card">
+   <h2>📱 Study Tools</h2>
+   <div class="grid">
+    <a class="app-button" href="#calendar">📅 Calendar</a>
+    <a class="app-button" href="#stopwatch">⏱ Stopwatch</a>
+    <a class="app-button" href="#calculator">🧮 Calculator</a>
+    <a class="app-button" href="#notes">📝 Study Notes</a>
+    <a class="app-button" href="#files">📁 PDF Library</a>
+    <a class="app-button" href="#files">🎬 Video Library</a>
+   </div>
+  </div>
+
+  <!-- CALENDAR -->
+  <div class="card" id="calendar">
+   <h2>📅 Calendar</h2>
+   <input type="date" id="calendarDate">
+   <input id="eventTitle" placeholder="Enter event or study task">
+   <button onclick="addEvent()">Add Event</button>
+   <div id="eventList"></div>
+  </div>
+
+  <!-- STOPWATCH -->
+  <div class="card" id="stopwatch">
+   <h2>⏱ Stopwatch</h2>
+   <h1 id="stopwatchDisplay" class="center">00:00:00</h1>
+   <div class="grid">
+    <button onclick="startStopwatch()">Start</button>
+    <button onclick="pauseStopwatch()">Pause</button>
+    <button onclick="resetStopwatch()">Reset</button>
+   </div>
+  </div>
+
+  <!-- CALCULATOR -->
+  <div class="card" id="calculator">
+   <h2>🧮 Calculator</h2>
+   <input id="calcInput" placeholder="Example: 12+5*2">
+   <button onclick="calculate()">Calculate</button>
+   <h3 id="calcResult">Result: </h3>
+  </div>
+
+  <!-- NOTES -->
+  <div class="card" id="notes">
+   <h2>📝 My Study Notes</h2>
+   <input id="noteTitle" placeholder="Note title">
+   <textarea id="noteBody" placeholder="Write your study notes here..."></textarea>
+   <button id="saveNoteBtn" onclick="saveNote()">Save Note</button>
+   <div id="notesList"></div>
+  </div>
+
+  <!-- FILES -->
+  <div class="card" id="files">
+   <h2>📁 PDF & Video Library</h2>
+   <p class="small">Upload your study PDFs or videos.</p>
+   <input type="file" id="studyFile" accept=".pdf,video/*">
+   <button onclick="uploadFile()">Upload File</button>
+   <div id="fileMessage" class="small"></div>
+   <div id="filesList"></div>
+  </div>
+
+  <div class="card">
+   <h2>📜 Legal Information</h2>
+   <button onclick="openLegal('terms')">Terms & Conditions</button>
+   <button onclick="openLegal('privacy')">Privacy Policy</button>
+  </div>
+
+ </main>
+
+ <footer>
+  © 2026 Sandip Study Hub. All Rights Reserved.
+ </footer>
 </section>
 
-<section class="card">
-<h2>📅 Date & Calendar</h2>
-<div id="clock"></div>
-<p id="today" class="small"></p>
-<input type="date" id="calendarDate">
-<p id="selectedDate" class="small">Select a date.</p>
-</section>
-
-<section class="card">
-<h2>⏱️ Stopwatch</h2>
-<div id="stopwatch">00:00:00</div>
-<div class="grid">
-<button onclick="startWatch()">Start</button>
-<button onclick="stopWatch()">Pause</button>
-<button onclick="resetWatch()">Reset</button>
+<!-- LEGAL PAGE -->
+<div id="legalPage" class="legal-page hidden">
+ <button class="back-btn" onclick="closeLegal()">← Back</button>
+ <div id="legalContent"></div>
 </div>
-</section>
-
-<section class="card">
-<h2>🧮 Calculator</h2>
-<input id="calcDisplay" placeholder="Example: 25+30*2">
-<div class="grid">
-<button onclick="calculate()">Calculate</button>
-<button onclick="clearCalc()">Clear</button>
-</div>
-<p id="calcResult"></p>
-</section>
-
-<section class="card">
-<h2>📝 Study Notes</h2>
-<input id="noteTitle" placeholder="Note title">
-<textarea id="noteBody" placeholder="Write your notes..."></textarea>
-<button onclick="saveNote()">Save Note to Cloud</button>
-<button onclick="loadNotes()">Refresh Notes</button>
-<div id="notesList"></div>
-</section>
-
-<section class="card">
-<h2>📄 PDF Library</h2>
-<input type="file" id="pdfFile" accept="application/pdf">
-<button onclick="uploadFile('pdfFile')">Upload PDF</button>
-<div id="pdfList"></div>
-</section>
-
-<section class="card">
-<h2>🎬 Video Library</h2>
-<input type="file" id="videoFile" accept="video/*">
-<button onclick="uploadFile('videoFile')">Upload Video</button>
-<div id="videoList"></div>
-<p class="small">Maximum file size: 50 MB per file.</p>
-</section>
-
-</main>
-
-<footer>© 2026 Sandip Study Hub</footer>
 
 <script>
-// SUPABASE CONNECTION
+// ===================================
+// SUPABASE CONFIGURATION
+// ===================================
+
 const SUPABASE_URL = "https://bsnkqpmhdfifxbzagxnj.supabase.co";
+
 const SUPABASE_KEY = "sb_publishable_rfBu8up21JKtCyGMkeEoOA_sYwvguFs";
 
-const client = window.supabase.createClient(
+const supabaseClient = window.supabase.createClient(
  SUPABASE_URL,
- SUPABASE_KEY
+ SUPABASE_KEY,
+ {
+  auth:{
+   persistSession:true,
+   autoRefreshToken:true,
+   detectSessionInUrl:true
+  }
+ }
 );
 
-let currentUser=null;
+const REDIRECT_URL =
+ "https://sandipgarai950-droid.github.io/Sandip-Study-Hub/";
 
-// GOOGLE LOGIN
-async function login(){
- const {error}=await client.auth.signInWithOAuth({
+// ===================================
+// LOGIN SYSTEM
+// ===================================
+
+let currentUser = null;
+
+async function googleLogin(){
+ const btn = document.getElementById("loginBtn");
+ const msg = document.getElementById("loginMessage");
+
+ btn.disabled = true;
+ msg.textContent = "Opening Google Login...";
+
+ const {error} = await supabaseClient.auth.signInWithOAuth({
   provider:"google",
-  options:{redirectTo:window.location.origin}
+  options:{
+   redirectTo:REDIRECT_URL
+  }
  });
- if(error) alert(error.message);
-}
 
-// LOGOUT
-async function logout(){
- const {error}=await client.auth.signOut();
- if(error) alert(error.message);
-}
-
-// LOGIN STATUS
-async function checkLogin(){
- const {data,error}=await client.auth.getSession();
- if(error) console.error(error);
- currentUser=data.session?.user||null;
- updateLoginStatus();
-
- if(currentUser){
-  loadNotes();
-  loadFiles("pdf");
-  loadFiles("video");
+ if(error){
+  msg.textContent = "Login Error: " + error.message;
+  btn.disabled = false;
  }
 }
 
-function updateLoginStatus(){
- document.getElementById("loginStatus").textContent=
- currentUser?"Logged in: "+(currentUser.email||"Google user"):
- "You are not logged in.";
+async function logout(){
+ await supabaseClient.auth.signOut();
+ currentUser = null;
+ showLogin();
 }
 
-client.auth.onAuthStateChange((_event,session)=>{
- currentUser=session?.user||null;
- updateLoginStatus();
-});
+function showLogin(){
+ document.getElementById("loginScreen").classList.remove("hidden");
+ document.getElementById("dashboard").classList.add("hidden");
+ document.getElementById("loginBtn").disabled = false;
+}
 
-// CLOCK
-function updateClock(){
- const now=new Date();
- document.getElementById("clock").textContent=
- now.toLocaleTimeString();
- document.getElementById("today").textContent=
- now.toLocaleDateString(undefined,{
-  weekday:"long",year:"numeric",month:"long",day:"numeric"
+async function showDashboard(user){
+ currentUser = user;
+
+ document.getElementById("loginScreen").classList.add("hidden");
+ document.getElementById("dashboard").classList.remove("hidden");
+
+ const name = user.user_metadata?.full_name ||
+              user.user_metadata?.name ||
+              user.email;
+
+ document.getElementById("welcomeText").textContent =
+  "Welcome, " + name;
+
+ loadNotes();
+ loadFiles();
+}
+
+async function initializeApp(){
+ showLogin();
+
+ const {data,error} = await supabaseClient.auth.getSession();
+
+ if(error){
+  document.getElementById("loginMessage").textContent = error.message;
+ }
+
+ if(data?.session?.user){
+  await showDashboard(data.session.user);
+ }
+
+ supabaseClient.auth.onAuthStateChange((event,session)=>{
+  if(session?.user){
+   currentUser = session.user;
+   document.getElementById("loginScreen").classList.add("hidden");
+   document.getElementById("dashboard").classList.remove("hidden");
+   document.getElementById("welcomeText").textContent =
+    "Welcome, " + (session.user.user_metadata?.full_name ||
+    session.user.email);
+
+   if(event === "SIGNED_IN"){
+    setTimeout(()=>{
+     loadNotes();
+     loadFiles();
+    },0);
+   }
+  }else{
+   currentUser = null;
+   showLogin();
+  }
  });
+}
+
+initializeApp();
+
+// ===================================
+// CLOCK
+// ===================================
+
+function updateClock(){
+ const now = new Date();
+
+ document.getElementById("clock").textContent =
+  now.toLocaleTimeString();
+
+ document.getElementById("todayDate").textContent =
+  now.toLocaleDateString(undefined,{
+   weekday:"long",year:"numeric",month:"long",day:"numeric"
+  });
 }
 setInterval(updateClock,1000);
 updateClock();
 
-document.getElementById("calendarDate").onchange=function(){
- document.getElementById("selectedDate").textContent=
- this.value?"Selected date: "+this.value:"Select a date.";
-};
+// ===================================
+// THEME
+// ===================================
 
-// STOPWATCH
-let seconds=0,watchTimer=null;
+function changeTheme(theme){
+ document.body.className =
+  theme === "dark" ? "" : "theme-" + theme;
 
-function displayWatch(){
- const h=String(Math.floor(seconds/3600)).padStart(2,"0");
- const m=String(Math.floor(seconds%3600/60)).padStart(2,"0");
- const s=String(seconds%60).padStart(2,"0");
- document.getElementById("stopwatch").textContent=
- `${h}:${m}:${s}`;
-}
-function startWatch(){
- if(watchTimer)return;
- watchTimer=setInterval(()=>{seconds++;displayWatch()},1000);
-}
-function stopWatch(){
- clearInterval(watchTimer);watchTimer=null;
-}
-function resetWatch(){
- stopWatch();seconds=0;displayWatch();
+ localStorage.setItem("studyTheme",theme);
 }
 
-// CALCULATOR
-function calculate(){
- const expression=document.getElementById("calcDisplay").value.trim();
- const result=document.getElementById("calcResult");
+const savedTheme = localStorage.getItem("studyTheme") || "dark";
+document.getElementById("themeSelect").value = savedTheme;
+changeTheme(savedTheme);
 
- if(!expression){result.textContent="Enter a calculation.";return}
- if(!/^[0-9+\-*/().\s]+$/.test(expression)){
-  result.textContent="Invalid calculation.";return;
+// ===================================
+// CALENDAR EVENTS
+// ===================================
+
+let events = JSON.parse(localStorage.getItem("studyEvents") || "[]");
+
+function addEvent(){
+ const date = document.getElementById("calendarDate").value;
+ const title = document.getElementById("eventTitle").value.trim();
+
+ if(!date || !title){
+  alert("Please select a date and enter an event.");
+  return;
  }
- try{
-  const answer=Function('"use strict";return ('+expression+')')();
-  result.textContent=Number.isFinite(answer)?
-   "Result: "+answer:"Invalid calculation.";
- }catch(e){result.textContent="Invalid calculation."}
-}
-function clearCalc(){
- document.getElementById("calcDisplay").value="";
- document.getElementById("calcResult").textContent="";
+
+ events.push({date,title});
+ localStorage.setItem("studyEvents",JSON.stringify(events));
+
+ document.getElementById("eventTitle").value = "";
+ showEvents();
 }
 
-// SAVE NOTES
-async function saveNote(){
- if(!currentUser){alert("Please login first.");return}
+function showEvents(){
+ const box = document.getElementById("eventList");
+ box.innerHTML = "";
 
- const title=document.getElementById("noteTitle").value.trim();
- const body=document.getElementById("noteBody").value.trim();
+ events.forEach((event,index)=>{
+  const div = document.createElement("div");
+  div.className = "item";
 
- if(!title||!body){alert("Enter title and note.");return}
+  const text = document.createElement("span");
+  text.textContent = event.date + " — " + event.title + " ";
 
- const {error}=await client.from("notes").insert({
-  user_id:currentUser.id,title,body
+  const btn = document.createElement("button");
+  btn.textContent = "Delete";
+  btn.onclick = ()=>{
+   events.splice(index,1);
+   localStorage.setItem("studyEvents",JSON.stringify(events));
+   showEvents();
+  };
+
+  div.append(text,btn);
+  box.appendChild(div);
  });
+}
+showEvents();
 
- if(error){alert(error.message);return}
+// ===================================
+// STOPWATCH
+// ===================================
 
- document.getElementById("noteTitle").value="";
- document.getElementById("noteBody").value="";
+let stopwatchSeconds = 0;
+let stopwatchTimer = null;
+
+function displayStopwatch(){
+ const h = String(Math.floor(stopwatchSeconds/3600)).padStart(2,"0");
+ const m = String(Math.floor((stopwatchSeconds%3600)/60)).padStart(2,"0");
+ const s = String(stopwatchSeconds%60).padStart(2,"0");
+
+ document.getElementById("stopwatchDisplay").textContent =
+  `${h}:${m}:${s}`;
+}
+
+function startStopwatch(){
+ if(stopwatchTimer) return;
+
+ stopwatchTimer = setInterval(()=>{
+  stopwatchSeconds++;
+  displayStopwatch();
+ },1000);
+}
+
+function pauseStopwatch(){
+ clearInterval(stopwatchTimer);
+ stopwatchTimer = null;
+}
+
+function resetStopwatch(){
+ pauseStopwatch();
+ stopwatchSeconds = 0;
+ displayStopwatch();
+}
+
+// ===================================
+// CALCULATOR
+// ===================================
+
+function calculate(){
+ const input = document.getElementById("calcInput").value.trim();
+ const result = document.getElementById("calcResult");
+
+ if(!input || !/^[0-9+\-*/().%\s]+$/.test(input)){
+  result.textContent = "Result: Invalid calculation";
+  return;
+ }
+
+ try{
+  const value = Function('"use strict"; return ('+input+')')();
+
+  if(typeof value !== "number" || !Number.isFinite(value)){
+   throw new Error("Invalid");
+  }
+
+  result.textContent = "Result: " + value;
+ }catch(e){
+  result.textContent = "Result: Invalid calculation";
+ }
+}
+
+// ===================================
+// STUDY NOTES
+// Requires public.notes table:
+// id, user_id, title, body, created_at
+// ===================================
+
+async function saveNote(){
+ if(!currentUser){
+  alert("Please login first.");
+  return;
+ }
+
+ const title = document.getElementById("noteTitle").value.trim();
+ const body = document.getElementById("noteBody").value.trim();
+
+ if(!title || !body){
+  alert("Enter note title and content.");
+  return;
+ }
+
+ const {error} = await supabaseClient
+  .from("notes")
+  .insert({
+   user_id:currentUser.id,
+   title:title,
+   body:body
+  });
+
+ if(error){
+  alert("Note Error: " + error.message);
+  return;
+ }
+
+ document.getElementById("noteTitle").value = "";
+ document.getElementById("noteBody").value = "";
+
  alert("Note saved successfully!");
  loadNotes();
 }
 
-// LOAD NOTES
 async function loadNotes(){
- if(!currentUser)return;
+ if(!currentUser) return;
 
- const list=document.getElementById("notesList");
- list.textContent="Loading...";
+ const box = document.getElementById("notesList");
+ box.textContent = "Loading notes...";
 
- const {data,error}=await client.from("notes")
-  .select("*").order("created_at",{ascending:false});
+ const {data,error} = await supabaseClient
+  .from("notes")
+  .select("*")
+  .eq("user_id",currentUser.id)
+  .order("created_at",{ascending:false});
 
- if(error){list.textContent=error.message;return}
+ if(error){
+  box.textContent = "Could not load notes: " + error.message;
+  return;
+ }
 
- list.textContent="";
- if(!data.length){list.textContent="No notes yet.";return}
+ box.innerHTML = "";
+
+ if(!data || data.length === 0){
+  box.textContent = "No notes saved yet.";
+  return;
+ }
 
  data.forEach(note=>{
-  const item=document.createElement("div");
-  item.className="item";
+  const div = document.createElement("div");
+  div.className = "item";
 
-  const heading=document.createElement("h3");
-  heading.textContent=note.title;
+  const heading = document.createElement("h3");
+  heading.textContent = note.title;
 
-  const content=document.createElement("p");
-  content.textContent=note.body;
+  const content = document.createElement("p");
+  content.textContent = note.body;
 
-  const del=document.createElement("button");
-  del.textContent="Delete";
-  del.className="danger";
-  del.onclick=()=>deleteNote(note.id);
+  const del = document.createElement("button");
+  del.textContent = "Delete";
+  del.onclick = ()=>deleteNote(note.id);
 
-  item.append(heading,content,del);
-  list.appendChild(item);
+  div.append(heading,content,del);
+  box.appendChild(div);
  });
 }
 
 async function deleteNote(id){
- if(!currentUser||!confirm("Delete this note?"))return;
+ if(!confirm("Delete this note?")) return;
 
- const {error}=await client.from("notes").delete().eq("id",id);
- if(error){alert(error.message);return}
+ const {error} = await supabaseClient
+  .from("notes")
+  .delete()
+  .eq("id",id)
+  .eq("user_id",currentUser.id);
+
+ if(error){
+  alert(error.message);
+  return;
+ }
+
  loadNotes();
 }
 
-// UPLOAD PDF / VIDEO
-async function uploadFile(inputId){
- if(!currentUser){alert("Please login first.");return}
+// ===================================
+// PDF & VIDEO STORAGE
+// Supabase bucket: study-files
+// ===================================
 
- const input=document.getElementById(inputId);
- const file=input.files[0];
+async function uploadFile(){
+ if(!currentUser) return;
 
- if(!file){alert("Choose a file first.");return}
- if(file.size>50*1024*1024){alert("File must be below 50 MB.");return}
+ const file = document.getElementById("studyFile").files[0];
+ const msg = document.getElementById("fileMessage");
 
- const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
- const path=currentUser.id+"/"+Date.now()+"_"+safeName;
-
- const {error}=await client.storage.from("study-files")
-  .upload(path,file,{upsert:false});
-
- if(error){alert("Upload failed: "+error.message);return}
-
- alert("File uploaded!");
- input.value="";
- loadFiles(inputId==="pdfFile"?"pdf":"video");
-}
-
-// LOAD PRIVATE FILES
-async function loadFiles(type){
- if(!currentUser)return;
-
- const list=document.getElementById(type==="pdf"?"pdfList":"videoList");
- list.textContent="Loading files...";
-
- const {data,error}=await client.storage.from("study-files")
-  .list(currentUser.id,{
-   limit:100,sortBy:{column:"created_at",order:"desc"}
-  });
-
- if(error){list.textContent=error.message;return}
-
- list.textContent="";
- const files=(data||[]).filter(file=>{
-  const name=(file.name||"").toLowerCase();
-  return type==="pdf"?name.endsWith(".pdf"):
-   /\.(mp4|webm|mov|m4v|3gp)$/.test(name);
- });
-
- if(!files.length){list.textContent="No files uploaded.";return}
-
- for(const file of files){
-  const path=currentUser.id+"/"+file.name;
-  const {data:urlData,error:urlError}=await client.storage
-   .from("study-files").createSignedUrl(path,3600);
-
-  const item=document.createElement("div");
-  item.className="item";
-
-  const label=document.createElement("p");
-  label.textContent=file.name;
-  item.appendChild(label);
-
-  if(!urlError){
-   const link=document.createElement("a");
-   link.href=urlData.signedUrl;
-   link.target="_blank";
-   link.rel="noopener";
-   link.textContent=type==="pdf"?"Open PDF":"Open Video";
-   item.appendChild(link);
-  }else{
-   const msg=document.createElement("p");
-   msg.textContent="Could not create file link.";
-   item.appendChild(msg);
-  }
-
-  const del=document.createElement("button");
-  del.textContent="Delete File";
-  del.className="danger";
-  del.onclick=()=>deleteFile(path,type);
-  item.appendChild(del);
-
-  list.appendChild(item);
+ if(!file){
+  msg.textContent = "Please select a file.";
+  return;
  }
+
+ if(file.size > 50 * 1024 * 1024){
+  msg.textContent = "Maximum file size is 50 MB.";
+  return;
+ }
+
+ const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+ const path = currentUser.id + "/" + Date.now() + "_" + safeName;
+
+ msg.textContent = "Uploading...";
+
+ const {error} = await supabaseClient.storage
+  .from("study-files")
+  .upload(path,file);
+
+ if(error){
+  msg.textContent = "Upload Error: " + error.message;
+  return;
+ }
+
+ msg.textContent = "Upload successful!";
+ document.getElementById("studyFile").value = "";
+ loadFiles();
 }
 
-async function deleteFile(path,type){
- if(!currentUser||!confirm("Delete this file?"))return;
+async function loadFiles(){
+ if(!currentUser) return;
 
- const {error}=await client.storage.from("study-files").remove([path]);
- if(error){alert(error.message);return}
- loadFiles(type);
+ const box = document.getElementById("filesList");
+ box.textContent = "Loading files...";
+
+ const {data,error} = await supabaseClient.storage
+  .from("study-files")
+  .list(currentUser.id,{limit:100});
+
+ if(error){
+  box.textContent = "File Error: " + error.message;
+  return;
+ }
+
+ box.innerHTML = "";
+
+ if(!data || data.length === 0){
+  box.textContent = "No uploaded files yet.";
+  return;
+ }
+
+ data.forEach(file=>{
+  const path = currentUser.id + "/" + file.name;
+
+  const div = document.createElement("div");
+  div.className = "item";
+
+  const name = document.createElement("p");
+  name.textContent = file.name;
+
+  const open = document.createElement("button");
+  open.textContent = "Open / Download";
+  open.onclick = async ()=>{
+   const {data,error} = await supabaseClient.storage
+    .from("study-files")
+    .createSignedUrl(path,300);
+
+   if(error){
+    alert(error.message);
+    return;
+   }
+
+   window.open(data.signedUrl,"_blank","noopener");
+  };
+
+  const del = document.createElement("button");
+  del.textContent = "Delete";
+  del.onclick = ()=>deleteFile(path);
+
+  div.append(name,open,del);
+  box.appendChild(div);
+ });
 }
 
-// THEMES
-const themes={
- dark:{bg:"#101827",card:"#1d293b",text:"#ffffff",accent:"#38bdf8",muted:"#b8c4d6"},
- bright:{bg:"#f1f5f9",card:"#ffffff",text:"#172033",accent:"#f59e0b",muted:"#526174"},
- green:{bg:"#092e25",card:"#124536",text:"#ffffff",accent:"#4ade80",muted:"#c0e8d1"},
- blue:{bg:"#071d3b",card:"#12345a",text:"#ffffff",accent:"#60a5fa",muted:"#c2d9f5"},
- red:{bg:"#351313",card:"#542020",text:"#ffffff",accent:"#fb7185",muted:"#f6c4c4"}
+async function deleteFile(path){
+ if(!confirm("Delete this file?")) return;
+
+ const {error} = await supabaseClient.storage
+  .from("study-files")
+  .remove([path]);
+
+ if(error){
+  alert(error.message);
+  return;
+ }
+
+ loadFiles();
+}
+
+// ===================================
+// TERMS & PRIVACY PAGES
+// ===================================
+
+const legalTexts = {
+ terms: `
+  <h1>Terms & Conditions</h1>
+  <p>Last Updated: 9 November 2026</p>
+
+  <h2>1. About the App</h2>
+  <p>Sandip Study Hub is an educational application designed to help students organize their learning activities.</p>
+
+  <h2>2. Google Login</h2>
+  <p>Users may sign in using a Google Account. Users are responsible for keeping their accounts secure.</p>
+
+  <h2>3. Acceptable Use</h2>
+  <p>Use this app for lawful and educational purposes. Do not misuse the app or upload harmful or unauthorized content.</p>
+
+  <h2>4. Notes and Files</h2>
+  <p>Users are responsible for the notes and files they create or upload. Do not upload copyrighted or sensitive personal information without permission.</p>
+
+  <h2>5. Study Materials</h2>
+  <p>Study materials are provided for educational assistance. We do not guarantee that every resource is error-free or suitable for every examination.</p>
+
+  <h2>6. Third-Party Services</h2>
+  <p>The app uses Google Sign-In and Supabase services. Their own terms and policies may also apply.</p>
+
+  <h2>7. Availability</h2>
+  <p>We try to keep the app available, but uninterrupted service cannot be guaranteed.</p>
+
+  <h2>8. Changes</h2>
+  <p>These Terms may be updated when necessary. The latest version will be available in the app.</p>
+
+  <h2>9. Contact</h2>
+  <p>Email: sandipgarai950@gmail.com</p>
+
+  <p><b>Thank you for using Sandip Study Hub!</b></p>
+ `,
+
+ privacy: `
+  <h1>Privacy Policy</h1>
+  <p>Last Updated: 9 November 2026</p>
+
+  <h2>1. Information We Use</h2>
+  <p>When you sign in with Google, the app may receive your account name, email address and available profile information.</p>
+
+  <h2>2. Notes and Files</h2>
+  <p>Your notes and uploaded files may be stored in Supabase cloud services and associated with your account.</p>
+
+  <h2>3. How Information Is Used</h2>
+  <p>Information is used to provide login, cloud storage and study features.</p>
+
+  <h2>4. Third-Party Services</h2>
+  <p>Google provides authentication and Supabase provides authentication and storage services. Their privacy policies also apply.</p>
+
+  <h2>5. Advertising</h2>
+  <p>This app does not intentionally include advertisements or sell users' personal information.</p>
+
+  <h2>6. Security</h2>
+  <p>We use available security features from our service providers. However, no online service can guarantee absolute security.</p>
+
+  <h2>7. Your Choices</h2>
+  <p>You can choose whether to sign in, sign out, and avoid uploading sensitive personal information.</p>
+
+  <h2>8. Changes</h2>
+  <p>This Privacy Policy may be updated when app features or data practices change.</p>
+
+  <h2>9. Contact</h2>
+  <p>Email: sandipgarai950@gmail.com</p>
+ `
 };
 
-function changeTheme(name){
- const t=themes[name]||themes.dark;
- const root=document.documentElement;
+function openLegal(type){
+ document.getElementById("legalContent").innerHTML =
+  legalTexts[type] || "";
 
- Object.keys(t).forEach(key=>{
-  root.style.setProperty("--"+key,t[key]);
- });
- localStorage.setItem("studyTheme",name);
+ document.getElementById("legalPage").classList.remove("hidden");
 }
 
-const savedTheme=localStorage.getItem("studyTheme")||"dark";
-document.getElementById("theme").value=savedTheme;
-changeTheme(savedTheme);
-
-// START
-checkLogin();
-displayWatch();
+function closeLegal(){
+ document.getElementById("legalPage").classList.add("hidden");
+}
 </script>
+
 </body>
-  </html>
-  
+ </html>
+ 
