@@ -1,693 +1,802 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#101827">
 <title>Study Star</title>
 
+<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/13.2.0/math.min.js"></script>
+
+<!-- Scientific Calculator -->
+<script src="https://cdn.jsdelivr.net/npm/mathjs@13.2.0/lib/browser/math.js"></script>
 
 <style>
 :root{
- --bg:#101827;
- --panel:#1d293b;
- --text:#ffffff;
- --muted:#aab8ca;
- --accent:#38bdf8;
- --border:#34445c;
+  --bg:#101827;
+  --panel:#1d293b;
+  --card:#26364c;
+  --text:#ffffff;
+  --muted:#aab7c8;
+  --accent:#38bdf8;
+  --danger:#ef4444;
+  --border:rgba(255,255,255,.12);
 }
 *{box-sizing:border-box}
 body{
- margin:0;background:var(--bg);color:var(--text);
- font-family:Arial,sans-serif;
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
 }
 button,input,textarea,select{font:inherit}
-button{
- border:0;border-radius:10px;padding:12px 15px;
- background:var(--accent);color:#07111e;
- font-weight:bold;cursor:pointer;
-}
-button:active{transform:scale(.97)}
-input,textarea,select{
- width:100%;padding:13px;margin:7px 0;
- background:var(--bg);color:var(--text);
- border:1px solid var(--border);border-radius:9px;
-}
-textarea{min-height:110px}
-a{color:var(--accent)}
+button{cursor:pointer}
 .hidden{display:none!important}
-.container{max-width:1100px;margin:auto;padding:15px}
-.panel{
- background:var(--panel);padding:17px;
- border-radius:15px;margin:12px 0;
-}
-.center{text-align:center}
-.muted{color:var(--muted)}
-.grid{
- display:grid;
- grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
- gap:12px;
-}
-.feature{
- background:var(--panel);padding:17px;
- border:1px solid var(--border);
- border-radius:14px;text-align:center;
-}
-.feature button{width:100%;margin-top:8px}
-header{
- display:flex;justify-content:space-between;
- align-items:center;flex-wrap:wrap;gap:10px;
-}
-#clock{font-size:clamp(28px,7vw,43px);font-weight:bold;color:var(--accent)}
-#today{font-size:17px}
-footer{text-align:center;padding:25px;color:var(--muted)}
-hr{border:0;border-top:1px solid var(--border);margin:18px 0}
+button:disabled{opacity:.5;cursor:not-allowed}
 
-/* FULL SCREEN APP PAGES */
-.fullscreen{
- position:fixed;inset:0;z-index:100;
- background:var(--bg);overflow-y:auto;
- padding:15px;
+/* LOGIN */
+#loginPage{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:linear-gradient(145deg,#101827,#172d46);
 }
-.full-inner{max-width:850px;margin:auto;padding-bottom:35px}
-.full-header{
- display:flex;align-items:center;gap:12px;
- padding:10px 0 18px;
- position:sticky;top:0;background:var(--bg);z-index:5;
+.login-box{
+  width:100%;
+  max-width:410px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  padding:30px 24px;
+  border-radius:22px;
+  text-align:center;
+  box-shadow:0 15px 45px rgba(0,0,0,.3);
 }
-.back-button{background:var(--panel);color:var(--text)}
-.big-display{
- background:#080d16;color:#fff;padding:25px 15px;
- border-radius:15px;text-align:right;
- font-size:clamp(28px,7vw,43px);
- min-height:100px;overflow-wrap:anywhere;
+.logo{
+  font-size:46px;
+  margin-bottom:8px;
+}
+.login-box h1{margin:5px 0;font-size:29px}
+.subtitle{color:var(--muted);margin-bottom:25px}
+.field{
+  width:100%;
+  padding:14px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:var(--bg);
+  color:var(--text);
+  outline:none;
+  margin:7px 0;
+}
+.primary{
+  width:100%;
+  padding:14px;
+  background:var(--accent);
+  color:#071421;
+  font-weight:bold;
+  border:0;
+  border-radius:10px;
+  margin-top:12px;
+}
+.status{font-size:14px;min-height:22px;margin-top:12px;color:var(--muted)}
+.legal-links{
+  display:flex;
+  justify-content:center;
+  gap:18px;
+  margin-top:25px;
+  flex-wrap:wrap;
+}
+.legal-links button{
+  border:0;
+  background:none;
+  color:var(--accent);
+  text-decoration:underline;
+}
+
+/* APP */
+#appPage{min-height:100vh}
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:15px;
+  background:var(--panel);
+  border-bottom:1px solid var(--border);
+  position:sticky;
+  top:0;
+  z-index:5;
+}
+.brand{font-size:21px;font-weight:bold}
+.top-actions{display:flex;gap:8px}
+.small-btn{
+  border:1px solid var(--border);
+  color:var(--text);
+  background:var(--card);
+  border-radius:9px;
+  padding:9px 11px;
+}
+.content{max-width:1050px;margin:auto;padding:18px}
+.welcome{
+  padding:20px;
+  border-radius:17px;
+  background:linear-gradient(120deg,#155e75,#1e40af);
+  margin-bottom:18px;
+}
+.welcome h2{margin:0 0 8px}
+.clock{font-size:14px;color:#e0f2fe}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:13px;
+}
+.app-card{
+  border:1px solid var(--border);
+  background:var(--panel);
+  color:var(--text);
+  border-radius:15px;
+  padding:20px 12px;
+  text-align:center;
+  min-height:112px;
+  font-weight:bold;
+}
+.app-card .emoji{font-size:30px;display:block;margin-bottom:10px}
+.section{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:15px;
+  padding:16px;
+  margin-bottom:15px;
+}
+.section h3{margin-top:0}
+.footer{text-align:center;color:var(--muted);font-size:12px;padding:25px}
+
+/* FULL SCREEN TOOLS */
+.tool-screen{
+  position:fixed;
+  inset:0;
+  z-index:20;
+  background:var(--bg);
+  display:flex;
+  flex-direction:column;
+  overflow:auto;
+}
+.tool-header{
+  background:var(--panel);
+  padding:14px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  position:sticky;
+  top:0;
+  z-index:2;
+  border-bottom:1px solid var(--border);
+}
+.tool-header h2{font-size:19px;margin:0}
+.back-btn{
+  border:0;
+  border-radius:9px;
+  padding:10px 14px;
+  background:var(--accent);
+  color:#071421;
+  font-weight:bold;
+}
+.tool-body{
+  width:100%;
+  max-width:700px;
+  padding:17px;
+  margin:0 auto;
+}
+
+/* CALCULATOR */
+.calc-display{
+  width:100%;
+  min-height:95px;
+  padding:20px 14px;
+  text-align:right;
+  font-size:27px;
+  overflow-wrap:anywhere;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:13px;
+  margin-bottom:12px;
+}
+.calc-options{display:flex;gap:10px;margin-bottom:12px}
+.calc-options select{
+  flex:1;
+  padding:10px;
+  border-radius:8px;
+  background:var(--panel);
+  color:var(--text);
+  border:1px solid var(--border);
 }
 .calc-grid{
- display:grid;grid-template-columns:repeat(5,1fr);
- gap:7px;margin-top:12px;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:7px;
 }
 .calc-grid button{
- background:#34445c;color:#fff;
- padding:16px 2px;font-size:15px;
- min-height:51px;
+  min-height:54px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:var(--card);
+  color:var(--text);
+  font-size:16px;
 }
-.calc-grid button.operator{background:#087eaa}
-.calc-grid button.equal{background:#139765}
-.calc-grid button.danger{background:#b83248}
-.calc-grid button.function{background:#263d57}
-.calc-history{
- color:var(--muted);text-align:right;
- min-height:25px;margin:8px 4px;
-}
+.calc-grid button.operator{background:#075985}
+.calc-grid button.equal{background:#16a34a;color:white}
+.calc-grid button.clear{background:#991b1b}
+
+/* CALENDAR */
 .calendar-top{
- display:flex;justify-content:space-between;
- align-items:center;gap:10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:12px;
+}
+.calendar-top button,.action-btn{
+  background:var(--accent);
+  color:#071421;
+  border:0;
+  padding:10px 13px;
+  border-radius:8px;
+  font-weight:bold;
 }
 .calendar-grid{
- display:grid;grid-template-columns:repeat(7,1fr);
- gap:5px;text-align:center;
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:5px;
 }
-.calendar-cell{
- padding:12px 2px;border-radius:8px;
- background:var(--panel);min-height:43px;
+.day-name,.day{
+  text-align:center;
+  padding:11px 2px;
+  border-radius:8px;
 }
-.calendar-cell.today{border:2px solid var(--accent)}
-.calendar-cell.selected{background:var(--accent);color:#07111e}
-.calendar-cell.other{opacity:.35}
-.calendar-cell.has-event{position:relative}
-.calendar-cell.has-event:after{
- content:"";width:5px;height:5px;
- background:#fbbf24;border-radius:50%;
- position:absolute;bottom:4px;left:calc(50% - 2px);
+.day-name{color:var(--muted);font-size:12px}
+.day{
+  background:var(--panel);
+  border:1px solid var(--border);
+  min-height:42px;
 }
-.stopwatch-display{
- font-size:clamp(40px,11vw,70px);
- font-weight:bold;text-align:center;
- padding:45px 5px;color:var(--accent);
- font-variant-numeric:tabular-nums;
+.day.selected{background:var(--accent);color:#071421}
+.day.today{border:2px solid #22c55e}
+.event-item,.note-item,.reminder-item{
+  padding:12px;
+  border:1px solid var(--border);
+  background:var(--card);
+  border-radius:10px;
+  margin:8px 0;
+  overflow-wrap:anywhere;
 }
-.stop-buttons{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
-.stop-buttons button{min-width:90px}
-.list-item{
- background:var(--panel);padding:13px;
- border-radius:10px;margin:9px 0;
- overflow-wrap:anywhere;
+.form-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.form-row input,.form-row textarea,.form-row select{
+  flex:1;
+  min-width:130px;
+  padding:12px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--bg);
+  color:var(--text);
 }
-.theme-row{display:flex;gap:8px;flex-wrap:wrap}
-.theme-row button{flex:1;min-width:75px}
+textarea{resize:vertical;min-height:90px}
+.action-btn.danger{background:var(--danger);color:white}
+
+/* STOPWATCH / TIMER */
+.time-display{
+  font-size:clamp(42px,12vw,70px);
+  text-align:center;
+  font-weight:bold;
+  padding:35px 0;
+  font-variant-numeric:tabular-nums;
+}
+.center-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.center-actions button{
+  padding:13px 20px;
+  border:0;
+  border-radius:10px;
+  background:var(--accent);
+  color:#071421;
+  font-weight:bold;
+}
+.center-actions .stop{background:var(--danger);color:white}
+.theme-list{display:flex;gap:8px;flex-wrap:wrap}
+.theme-list button{
+  border:1px solid var(--border);
+  padding:11px 14px;
+  border-radius:9px;
+  color:white;
+}
+.modal{
+  position:fixed;
+  inset:0;
+  z-index:40;
+  background:rgba(0,0,0,.7);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:18px;
+}
+.modal-box{
+  width:100%;
+  max-width:500px;
+  max-height:85vh;
+  overflow:auto;
+  background:var(--panel);
+  padding:22px;
+  border-radius:15px;
+}
+.modal-box h2{margin-top:0}
+@media(max-width:380px){
+  .grid{gap:9px}
+  .app-card{padding:15px 7px}
+  .calc-grid{gap:5px}
+  .calc-grid button{font-size:14px;min-height:48px}
+}
 </style>
 </head>
 
 <body>
 
 <!-- LOGIN PAGE -->
-<section id="loginPage" class="container">
- <div class="panel center" style="max-width:440px;margin:45px auto">
-  <h1 style="font-size:34px">⭐ Study Star</h1>
-  <p class="muted" id="loginSubtitle">Your Smart Study Companion</p>
+<div id="loginPage">
+  <div class="login-box">
+    <div class="logo">⭐</div>
+    <h1>Study Star</h1>
+    <p class="subtitle">Your Smart Study Companion</p>
 
-  <h3 id="loginHeading">Login to Continue</h3>
+    <div id="emailStep">
+      <input id="emailInput" class="field" type="email"
+        placeholder="Enter your email address" autocomplete="email">
+      <button id="sendOtpBtn" class="primary" onclick="sendOTP()">Send OTP</button>
+    </div>
 
-  <input id="email" type="email" placeholder="Enter your email address">
+    <div id="otpStep" class="hidden">
+      <p>Enter the OTP sent to your email address.</p>
+      <input id="otpInput" class="field" type="text"
+        inputmode="numeric" maxlength="8" placeholder="Enter OTP">
+      <button id="verifyOtpBtn" class="primary" onclick="verifyOTP()">Verify & Login</button>
+      <button class="small-btn" style="margin-top:12px" onclick="backToEmail()">Change Email</button>
+    </div>
 
-  <button id="sendOtpButton" style="width:100%" onclick="sendOTP()">
-   Send OTP
-  </button>
+    <div id="loginStatus" class="status" aria-live="polite"></div>
 
-  <div id="otpArea" class="hidden">
-   <input id="otp" type="text" inputmode="numeric"
-    maxlength="8" placeholder="Enter email OTP">
-   <button style="width:100%" onclick="verifyOTP()">
-    Verify OTP & Login
-   </button>
+    <div class="legal-links">
+      <button onclick="openLegal('privacy')">Privacy Policy</button>
+      <button onclick="openLegal('terms')">Terms & Conditions</button>
+    </div>
   </div>
+</div>
 
-  <p id="loginMessage" class="muted small"></p>
+<!-- MAIN APP -->
+<div id="appPage" class="hidden">
+  <header class="topbar">
+    <div class="brand">⭐ Study Star</div>
+    <div class="top-actions">
+      <button class="small-btn" onclick="openThemes()">Themes</button>
+      <button class="small-btn" onclick="logout()">Logout</button>
+    </div>
+  </header>
 
-  <hr>
+  <main class="content">
+    <div class="welcome">
+      <h2>Welcome to Study Star!</h2>
+      <div id="liveClock" class="clock">Loading date and time...</div>
+    </div>
 
-  <label for="loginLanguage">Select Language</label>
-  <select id="loginLanguage" onchange="changeLanguage(this.value)">
-   <option value="en">English</option>
-   <option value="hi">हिन्दी</option>
-  </select>
+    <div class="grid">
+      <button class="app-card" onclick="openTool('calculator')">
+        <span class="emoji">🧮</span>Scientific Calculator
+      </button>
+      <button class="app-card" onclick="openTool('calendar')">
+        <span class="emoji">📅</span>Calendar
+      </button>
+      <button class="app-card" onclick="openTool('stopwatch')">
+        <span class="emoji">⏱️</span>Stopwatch
+      </button>
+      <button class="app-card" onclick="openTool('timer')">
+        <span class="emoji">⏳</span>Timer
+      </button>
+      <button class="app-card" onclick="openTool('notes')">
+        <span class="emoji">📝</span>Notes
+      </button>
+      <button class="app-card" onclick="openTool('reminders')">
+        <span class="emoji">🔔</span>Reminders
+      </button>
+      <button class="app-card" onclick="openTool('countdown')">
+        <span class="emoji">🎯</span>Exam Countdown
+      </button>
+      <button class="app-card" onclick="openTool('themes')">
+        <span class="emoji">🎨</span>App Themes
+      </button>
+    </div>
 
-  <hr>
+    <div class="section" style="margin-top:18px">
+      <h3>Quick Information</h3>
+      <p>Use your calendar, notes and reminders to organise your study routine.</p>
+      <p id="userEmail" style="color:var(--muted);overflow-wrap:anywhere"></p>
+    </div>
 
-  <p>
-   <a href="#" onclick="showLegal('privacy');return false">
-    Privacy Policy
-   </a>
-   &nbsp; | &nbsp;
-   <a href="#" onclick="showLegal('terms');return false">
-    Terms & Conditions
-   </a>
-  </p>
- </div>
-</section>
+    <div class="footer">
+      © 2026 Study Star. All Rights Reserved.<br>
+      Designed with ❤️ by Sandip Garai.
+    </div>
+  </main>
+</div>
 
-<!-- PRIVACY / TERMS -->
-<section id="legalPage" class="container hidden">
- <div class="panel">
-  <button class="back-button" onclick="closeLegal()">← Back</button>
-  <div id="legalContent"></div>
- </div>
-</section>
-
-<!-- DASHBOARD -->
-<section id="dashboard" class="container hidden">
-
- <header>
-  <div>
-   <h1>⭐ Study Star</h1>
-   <p class="muted">Welcome to your Study Dashboard</p>
+<!-- FULL SCREEN TOOL -->
+<div id="toolScreen" class="tool-screen hidden">
+  <div class="tool-header">
+    <button class="back-btn" onclick="closeTool()">← Back</button>
+    <h2 id="toolTitle">Tool</h2>
   </div>
-  <button onclick="logout()">Logout</button>
- </header>
+  <div id="toolBody" class="tool-body"></div>
+</div>
 
- <div class="panel center">
-  <div id="today">Loading Date...</div>
-  <div id="clock">00:00:00</div>
-  <p class="muted">Indian Standard Time (IST)</p>
- </div>
-
- <div class="panel">
-  <h3>🎨 Choose Theme</h3>
-  <div class="theme-row">
-   <button onclick="changeTheme('dark')">Dark</button>
-   <button onclick="changeTheme('bright')">Bright</button>
-   <button onclick="changeTheme('green')">Green</button>
-   <button onclick="changeTheme('blue')">Blue</button>
-   <button onclick="changeTheme('red')">Red</button>
+<!-- MODAL -->
+<div id="modal" class="modal hidden" onclick="modalBackdrop(event)">
+  <div class="modal-box">
+    <div id="modalContent"></div>
+    <button class="action-btn" style="margin-top:15px" onclick="closeModal()">Close</button>
   </div>
- </div>
-
- <h2>My Applications</h2>
-
- <div class="grid">
-  <div class="feature">
-   <h2>🧮</h2>
-   <h3>Scientific Calculator</h3>
-   <button onclick="openFull('calculator')">Open App</button>
-  </div>
-
-  <div class="feature">
-   <h2>📅</h2>
-   <h3>Calendar</h3>
-   <button onclick="openFull('calendar')">Open App</button>
-  </div>
-
-  <div class="feature">
-   <h2>⏱️</h2>
-   <h3>Stopwatch</h3>
-   <button onclick="openFull('stopwatch')">Open App</button>
-  </div>
-
-  <div class="feature">
-   <h2>⏳</h2>
-   <h3>Timer</h3>
-   <button onclick="openFull('timer')">Open App</button>
-  </div>
-
-  <div class="feature">
-   <h2>📝</h2>
-   <h3>My Notes</h3>
-   <button onclick="openFull('notes')">Open App</button>
-  </div>
-
-  <div class="feature">
-   <h2>🔔</h2>
-   <h3>Reminders</h3>
-   <button onclick="openFull('reminders')">Open App</button>
-  </div>
-
-  <div class="feature">
-   <h2>🎓</h2>
-   <h3>Exam Countdown</h3>
-   <button onclick="openFull('exams')">Open App</button>
-  </div>
- </div>
-
- <footer>
-  © 2026 Study Star. All Rights Reserved.<br>
-  Designed with ❤️ by Sandip Garai
- </footer>
-</section>
-
-<!-- SCIENTIFIC CALCULATOR FULL SCREEN -->
-<section id="calculator" class="fullscreen hidden">
- <div class="full-inner">
-  <div class="full-header">
-   <button class="back-button" onclick="goDashboard()">← Back</button>
-   <h2>Scientific Calculator</h2>
-  </div>
-
-  <div class="panel">
-   <select id="angleMode">
-    <option value="deg">DEG - Degrees</option>
-    <option value="rad">RAD - Radians</option>
-   </select>
-
-   <div class="calc-history" id="calcHistory"></div>
-   <div id="calcDisplay" class="big-display">0</div>
-
-   <div class="calc-grid">
-    <button class="danger" onclick="clearCalc()">AC</button>
-    <button onclick="deleteCalc()">DEL</button>
-    <button class="function" onclick="calcAdd('(')">(</button>
-    <button class="function" onclick="calcAdd(')')">)</button>
-    <button class="operator" onclick="calcAdd('/')">÷</button>
-
-    <button class="function" onclick="calcFunc('sin')">sin</button>
-    <button class="function" onclick="calcFunc('cos')">cos</button>
-    <button class="function" onclick="calcFunc('tan')">tan</button>
-    <button class="function" onclick="calcAdd('pi')">π</button>
-    <button class="operator" onclick="calcAdd('*')">×</button>
-
-    <button class="function" onclick="calcFunc('asin')">sin⁻¹</button>
-    <button class="function" onclick="calcFunc('acos')">cos⁻¹</button>
-    <button class="function" onclick="calcFunc('atan')">tan⁻¹</button>
-    <button class="function" onclick="calcAdd('e')">e</button>
-    <button class="operator" onclick="calcAdd('-')">−</button>
-
-    <button class="function" onclick="calcFunc('sqrt')">√</button>
-    <button class="function" onclick="calcAdd('^2')">x²</button>
-    <button class="function" onclick="calcAdd('^')">xʸ</button>
-    <button class="function" onclick="calcFunc('log10')">log</button>
-    <button class="operator" onclick="calcAdd('+')">+</button>
-
-    <button class="function" onclick="calcFunc('log')">ln</button>
-    <button class="function" onclick="calcAdd('!')">n!</button>
-    <button class="function" onclick="calcPercent()">%</button>
-    <button class="function" onclick="calcAdd('.')">.</button>
-    <button class="equal" onclick="calculate()">=</button>
-
-    <button onclick="calcAdd('7')">7</button>
-    <button onclick="calcAdd('8')">8</button>
-    <button onclick="calcAdd('9')">9</button>
-    <button onclick="calcAdd('4')">4</button>
-    <button onclick="calcAdd('5')">5</button>
-
-    <button onclick="calcAdd('6')">6</button>
-    <button onclick="calcAdd('1')">1</button>
-    <button onclick="calcAdd('2')">2</button>
-    <button onclick="calcAdd('3')">3</button>
-    <button onclick="calcAdd('0')">0</button>
-   </div>
-   <p class="muted small">Scientific Calculator · DEG / RAD mode</p>
-  </div>
- </div>
-</section>
-
-<!-- CALENDAR FULL SCREEN -->
-<section id="calendar" class="fullscreen hidden">
- <div class="full-inner">
-  <div class="full-header">
-   <button class="back-button" onclick="goDashboard()">← Back</button>
-   <h2>Calendar</h2>
-  </div>
-
-  <div class="panel">
-   <div class="calendar-top">
-    <button onclick="changeMonth(-1)">❮</button>
-    <h2 id="monthTitle">Month Year</h2>
-    <button onclick="changeMonth(1)">❯</button>
-   </div>
-
-   <div class="calendar-grid" id="calendarGrid"></div>
-
-   <hr>
-   <h3 id="selectedDateTitle">Selected Date</h3>
-   <input id="calendarEventTitle" placeholder="Event or note title">
-   <button onclick="saveCalendarEvent()">Save Event</button>
-   <div id="calendarEvents"></div>
-  </div>
- </div>
-</section>
-
-<!-- STOPWATCH FULL SCREEN -->
-<section id="stopwatch" class="fullscreen hidden">
- <div class="full-inner">
-  <div class="full-header">
-   <button class="back-button" onclick="goDashboard()">← Back</button>
-   <h2>Stopwatch</h2>
-  </div>
-
-  <div class="panel center">
-   <div class="stopwatch-display" id="stopwatchDisplay">00:00:00.00</div>
-   <div class="stop-buttons">
-    <button onclick="startStopwatch()">Start</button>
-    <button onclick="stopStopwatch()">Pause</button>
-    <button onclick="resetStopwatch()">Reset</button>
-    <button onclick="lapStopwatch()">Lap</button>
-   </div>
-   <h3>Lap Times</h3>
-   <div id="lapList"></div>
-  </div>
- </div>
-</section>
-
-<!-- TIMER FULL SCREEN -->
-<section id="timer" class="fullscreen hidden">
- <div class="full-inner">
-  <div class="full-header">
-   <button class="back-button" onclick="goDashboard()">← Back</button>
-   <h2>Timer</h2>
-  </div>
-
-  <div class="panel center">
-   <h2>Set Timer</h2>
-   <input id="timerMinutes" type="number" min="0" placeholder="Minutes">
-   <input id="timerSeconds" type="number" min="0" max="59" placeholder="Seconds">
-   <div class="stopwatch-display" id="timerDisplay">00:00</div>
-   <button onclick="startTimer()">Start</button>
-   <button onclick="pauseTimer()">Pause</button>
-   <button onclick="resetTimer()">Reset</button>
-  </div>
- </div>
-</section>
-
-<!-- NOTES FULL SCREEN -->
-<section id="notes" class="fullscreen hidden">
- <div class="full-inner">
-  <div class="full-header">
-   <button class="back-button" onclick="goDashboard()">← Back</button>
-   <h2>My Notes</h2>
-  </div>
-
-  <div class="panel">
-   <input id="noteTitle" placeholder="Note Title">
-   <textarea id="noteText" placeholder="Write your notes here..."></textarea>
-   <button onclick="saveNote()">Save Note</button>
-   <div id="notesList"></div>
-  </div>
- </div>
-</section>
-
-<!-- REMINDERS FULL SCREEN -->
-<section id="reminders" class="fullscreen hidden">
- <div class="full-inner">
-  <div class="full-header">
-   <button class="back-button" onclick="goDashboard()">← Back</button>
-   <h2>Reminders</h2>
-  </div>
-
-  <div class="panel">
-   <input id="reminderText" placeholder="Reminder message">
-   <input id="reminderTime" type="datetime-local">
-   <button onclick="addReminder()">Set Reminder</button>
-   <div id="reminderList"></div>
-  </div>
- </div>
-</section>
-
-<!-- EXAMS FULL SCREEN -->
-<section id="exams" class="fullscreen hidden">
- <div class="full-inner">
-  <div class="full-header">
-   <button class="back-button" onclick="goDashboard()">← Back</button>
-   <h2>Exam Countdown</h2>
-  </div>
-
-  <div class="panel">
-   <h2>JEE Main 2027</h2>
-   <p id="jeeCountdown">Official date needs verification.</p>
-   <a href="https://jeemain.nta.nic.in/" target="_blank" rel="noopener">
-    NTA Official Website
-   </a>
-   <hr>
-   <h2>WB HS 2027</h2>
-   <p id="hsCountdown">Official date needs verification.</p>
-   <a href="https://wbchse.wb.gov.in/" target="_blank" rel="noopener">
-    WBCHSE Official Website
-   </a>
-   <p class="muted small">
-    Exam dates will be shown as confirmed only after checking official notices.
-   </p>
-  </div>
- </div>
-</section>
+</div>
 
 <script>
-// ====================================
-// SUPABASE CONFIGURATION
-// ====================================
+/* ======================================
+   SUPABASE CONFIGURATION
+====================================== */
 
-const SUPABASE_URL =
-"https://bsnkqpmhdfifxbzagxnj.supabase.co";
-
-const SUPABASE_KEY =
-"sb_publishable_rfBu8up21JKtCyGMkeEoOA_sYwvguFs";
+const SUPABASE_URL = "https://bsnkqpmhdfifxbzagxnj.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_rfBu8up21JKtCyGMkeEoOA_sYwvguFs";
 
 const supabaseClient = window.supabase.createClient(
- SUPABASE_URL,
- SUPABASE_KEY
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
 );
 
-// ====================================
-// LANGUAGE: LOGIN PAGE ONLY
-// ====================================
+/* ======================================
+   GENERAL HELPERS
+====================================== */
 
-let currentLanguage="en";
+const $ = id => document.getElementById(id);
 
-const loginTranslations={
- en:{
-  subtitle:"Your Smart Study Companion",
-  heading:"Login to Continue",
-  email:"Enter your email address",
-  send:"Send OTP",
-  verify:"Verify OTP & Login",
-  language:"Select Language"
- },
- hi:{
-  subtitle:"आपका स्मार्ट स्टडी साथी",
-  heading:"जारी रखने के लिए लॉगिन करें",
-  email:"अपना ईमेल पता दर्ज करें",
-  send:"OTP भेजें",
-  verify:"OTP सत्यापित करें और लॉगिन करें",
-  language:"भाषा चुनें"
- }
-};
-
-function changeLanguage(lang){
- currentLanguage=lang;
- const t=loginTranslations[lang];
-
- document.getElementById("loginSubtitle").textContent=t.subtitle;
- document.getElementById("loginHeading").textContent=t.heading;
- document.getElementById("email").placeholder=t.email;
- document.getElementById("sendOtpButton").textContent=t.send;
-
- document.querySelector("#otpArea button").textContent=t.verify;
-
- localStorage.setItem("studyLanguage",lang);
+function safeText(value){
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#039;"
+  })[char]);
 }
 
-document.getElementById("loginLanguage").value=
- localStorage.getItem("studyLanguage")||"en";
+function getData(key, fallback){
+  try{
+    const value = localStorage.getItem("studyStar_" + key);
+    return value ? JSON.parse(value) : fallback;
+  }catch(error){
+    return fallback;
+  }
+}
 
-changeLanguage(document.getElementById("loginLanguage").value);
+function saveData(key, value){
+  localStorage.setItem("studyStar_" + key, JSON.stringify(value));
+}
 
-// ====================================
-// EMAIL OTP LOGIN
-// ====================================
+function setStatus(message, error=false){
+  $("loginStatus").textContent = message;
+  $("loginStatus").style.color = error ? "#fca5a5" : "#86efac";
+}
+
+/* ======================================
+   EMAIL OTP LOGIN
+====================================== */
+
+let loginEmail = "";
 
 async function sendOTP(){
- const email=document.getElementById("email").value.trim();
- const message=document.getElementById("loginMessage");
+  const email = $("emailInput").value.trim();
 
- if(!email){
-  message.textContent="Please enter your email address.";
-  return;
- }
+  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    setStatus("Please enter a valid email address.", true);
+    return;
+  }
 
- message.textContent="Sending OTP...";
+  const button = $("sendOtpBtn");
+  button.disabled = true;
+  button.textContent = "Sending...";
+  setStatus("Sending OTP. Please wait...");
 
- const {error}=await supabaseClient.auth.signInWithOtp({
-  email:email,
-  options:{shouldCreateUser:true}
- });
+  try{
+    const {data,error} = await supabaseClient.auth.signInWithOtp({
+      email: email,
+      options:{
+        shouldCreateUser:true
+      }
+    });
 
- if(error){
-  message.textContent=error.message;
-  return;
- }
+    if(error) throw error;
 
- document.getElementById("otpArea").classList.remove("hidden");
- message.textContent="OTP sent. Please check your email.";
+    loginEmail = email;
+    $("emailStep").classList.add("hidden");
+    $("otpStep").classList.remove("hidden");
+    setStatus("OTP sent successfully. Please check your inbox.");
+  }catch(error){
+    console.error("OTP Error:",error);
+    setStatus(error.message || "Unable to send OTP. Please try again.",true);
+  }finally{
+    button.disabled = false;
+    button.textContent = "Send OTP";
+  }
 }
 
 async function verifyOTP(){
- const email=document.getElementById("email").value.trim();
- const token=document.getElementById("otp").value.trim();
- const message=document.getElementById("loginMessage");
+  const token = $("otpInput").value.trim();
 
- if(!token){
-  message.textContent="Please enter your OTP.";
-  return;
- }
+  if(!loginEmail){
+    setStatus("Please enter your email address again.",true);
+    backToEmail();
+    return;
+  }
 
- message.textContent="Verifying OTP...";
+  if(!token){
+    setStatus("Please enter the OTP.",true);
+    return;
+  }
 
- const {data,error}=await supabaseClient.auth.verifyOtp({
-  email:email,
-  token:token,
-  type:"email"
- });
+  const button = $("verifyOtpBtn");
+  button.disabled = true;
+  button.textContent = "Verifying...";
+  setStatus("Verifying OTP...");
 
- if(error){
-  message.textContent=error.message;
-  return;
- }
+  try{
+    const {data,error} = await supabaseClient.auth.verifyOtp({
+      email:loginEmail,
+      token:token,
+      type:"email"
+    });
 
- if(data.session){
-  showDashboard();
- }
+    if(error) throw error;
+
+    if(data.session){
+      showDashboard(data.session.user);
+    }else{
+      setStatus("Login could not be completed. Please try again.",true);
+    }
+  }catch(error){
+    console.error("OTP Verification Error:",error);
+    setStatus(error.message || "Invalid or expired OTP.",true);
+  }finally{
+    button.disabled = false;
+    button.textContent = "Verify & Login";
+  }
 }
 
-function showDashboard(){
- document.getElementById("loginPage").classList.add("hidden");
- document.getElementById("legalPage").classList.add("hidden");
- document.getElementById("dashboard").classList.remove("hidden");
- hideAllFull();
+function backToEmail(){
+  $("otpStep").classList.add("hidden");
+  $("emailStep").classList.remove("hidden");
+  $("otpInput").value = "";
+  $("loginStatus").textContent = "";
 }
 
 async function logout(){
- await supabaseClient.auth.signOut();
- hideAllFull();
- document.getElementById("dashboard").classList.add("hidden");
- document.getElementById("loginPage").classList.remove("hidden");
- document.getElementById("otpArea").classList.add("hidden");
- document.getElementById("otp").value="";
- document.getElementById("loginMessage").textContent="";
+  const {error} = await supabaseClient.auth.signOut();
+  if(error) alert("Logout error: " + error.message);
+  $("appPage").classList.add("hidden");
+  $("loginPage").classList.remove("hidden");
+  closeTool();
+}
+
+/* ======================================
+   AUTH SESSION
+====================================== */
+
+function showDashboard(user){
+  $("loginPage").classList.add("hidden");
+  $("appPage").classList.remove("hidden");
+  $("userEmail").textContent = "Logged in as: " + (user.email || "");
+  updateClock();
 }
 
 supabaseClient.auth.onAuthStateChange((event,session)=>{
- if(session){
-  showDashboard();
- }else{
-  hideAllFull();
-  document.getElementById("dashboard").classList.add("hidden");
-  document.getElementById("loginPage").classList.remove("hidden");
- }
+  if(session && session.user){
+    showDashboard(session.user);
+  }else{
+    $("appPage").classList.add("hidden");
+    $("loginPage").classList.remove("hidden");
+  }
 });
 
-(async()=>{
- const {data}=await supabaseClient.auth.getSession();
- if(data.session)showDashboard();
-})();
+async function checkSession(){
+  try{
+    const {data,error} = await supabaseClient.auth.getSession();
+    if(error) throw error;
+    if(data.session){
+      showDashboard(data.session.user);
+    }
+  }catch(error){
+    console.error("Session Error:",error);
+  }
+}
+checkSession();
 
-// ====================================
-// PRIVACY POLICY & TERMS
-// ====================================
+/* ======================================
+   LIVE DATE AND TIME - INDIA
+====================================== */
 
-function showLegal(type){
- document.getElementById("loginPage").classList.add("hidden");
- document.getElementById("legalPage").classList.remove("hidden");
+function updateClock(){
+  const now = new Date();
+  $("liveClock").textContent = now.toLocaleString("en-IN",{
+    timeZone:"Asia/Kolkata",
+    weekday:"long",
+    day:"2-digit",
+    month:"long",
+    year:"numeric",
+    hour:"2-digit",
+    minute:"2-digit",
+    second:"2-digit",
+    hour12:true
+  });
+}
+setInterval(updateClock,1000);
 
- const content=document.getElementById("legalContent");
+/* ======================================
+   TOOL NAVIGATION
+====================================== */
 
- if(type==="privacy"){
-  content.innerHTML=`
-  <h2>Privacy Policy</h2>
-  <p>Welcome to Study Star.</p>
-  <p>Study Star uses Supabase Authentication to verify users through their email address.</p>
-  <p>Your email address is used for login and account authentication.</p>
-  <p>In this version, notes, events and reminders are stored in your browser's local storage on this device.</p>
-  <p>These local items are not automatically synced to other devices.</p>
-  <p>Do not enter passwords or sensitive personal information in your notes.</p>
-  <p>We do not sell your personal information.</p>
-  <p>For questions about this policy, contact the website owner.</p>`;
- }else{
-  content.innerHTML=`
-  <h2>Terms & Conditions</h2>
-  <p>Welcome to Study Star.</p>
-  <p>This website is designed for educational and personal study purposes.</p>
-  <p>Users must use their own email account for login.</p>
-  <p>Calculator results are provided as a study aid.</p>
-  <p>Always verify examination dates from the official NTA and WBCHSE websites.</p>
-  <p>Do not misuse the website or attempt to access another user's account.</p>
-  <p>Website features may be updated or changed.</p>`;
- }
+let currentTool = "";
+
+const toolNames = {
+  calculator:"Scientific Calculator",
+  calendar:"Calendar",
+  stopwatch:"Stopwatch",
+  timer:"Timer",
+  notes:"Notes",
+  reminders:"Reminders",
+  countdown:"Exam Countdown",
+  themes:"App Themes"
+};
+
+function openTool(name){
+  currentTool = name;
+  $("toolTitle").textContent = toolNames[name] || "Study Star";
+  $("toolScreen").classList.remove("hidden");
+
+  const renderers = {
+    calculator:renderCalculator,
+    calendar:renderCalendar,
+    stopwatch:renderStopwatch,
+    timer:renderTimer,
+    notes:renderNotes,
+    reminders:renderReminders,
+    countdown:renderCountdown,
+    themes:renderThemes
+  };
+
+  if(renderers[name]) renderers[name]();
 }
 
-function closeLegal(){
- document.getElementById("legalPage").classList.add("hidden");
- document.getElementById("loginPage").classList.remove("hidden");
+function closeTool(){
+  $("toolScreen").classList.add("hidden");
+  $("toolBody").innerHTML = "";
+  currentTool = "";
+  stopTimerInterval();
 }
 
-// ====================================
-// FULL SCREEN NAVIGATION
-// ====================================
-
-const fullPages=[
- "calculator","calendar","stopwatch",
- "timer","notes","reminders","exams"
-];
-
-function hideAllFull(){
- fullPages.forEach(id=>{
-  document.getElementById(id).classList.add("hidden");
- });
+function setToolHTML(html){
+  $("toolBody").innerHTML = html;
 }
 
-function openFull(id){
- document.getElementById("dashboard").classList.add("hidden");
- hideAllFull();
- document.getElementById(id).classList.remove("hidden");
+/* ======================================
+   SCIENTIFIC CALCULATOR
+====================================== */
 
- if(id==="calendar")renderCalendar();
- if(id==="notes")renderNotes();
- if(id==="reminders")renderReminders();
+let calcExpression = "";
+let calcAnswer = "";
+let angleMode = "DEG";
+
+function renderCalculator(){
+  setToolHTML(`
+    <div class="calc-display">
+      <div id="calcExpression" style="font-size:15px;color:var(--muted);min-height:22px"></div>
+      <div id="calcResult">0</div>
+    </div>
+
+    <div class="calc-options">
+      <select id="angleSelect" onchange="angleMode=this.value">
+        <option value="DEG">DEG</option>
+        <option value="RAD">RAD</option>
+      </select>
+      <button class="action-btn" onclick="calcExpression='' ; updateCalc()">Clear</button>
+    </div>
+
+    <div class="calc-grid">
+      <button onclick="calcAdd('sin(')">sin</button>
+      <button onclick="calcAdd('cos(')">cos</button>
+      <button onclick="calcAdd('tan(')">tan</button>
+      <button onclick="calcAdd('asin(')">sin⁻¹</button>
+      <button onclick="calcAdd('acos(')">cos⁻¹</button>
+
+      <button onclick="calcAdd('atan(')">tan⁻¹</button>
+      <button onclick="calcAdd('sqrt(')">√</button>
+      <button onclick="calcAdd('^2')">x²</button>
+      <button onclick="calcAdd('^')">xʸ</button>
+      <button onclick="calcAdd('!')">n!</button>
+
+      <button onclick="calcAdd('log10(')">log</button>
+      <button onclick="calcAdd('log(')">ln</button>
+      <button onclick="calcAdd('pi')">π</button>
+      <button onclick="calcAdd('e')">e</button>
+      <button onclick="calcAdd('%')">%</button>
+
+      <button onclick="calcAdd('(')">(</button>
+      <button onclick="calcAdd(')')">)</button>
+      <button onclick="calcAdd('/')">÷</button>
+      <button onclick="calcAdd('*')">×</button>
+      <button class="clear" onclick="calcDelete()">DEL</button>
+
+      <button onclick="calcAdd('7')">7</button>
+      <button onclick="calcAdd('8')">8</button>
+      <button onclick="calcAdd('9')">9</button>
+      <button onclick="calcAdd('-')">−</button>
+      <button onclick="calcAdd('+')">+</button>
+
+      <button onclick="calcAdd('4')">4</button>
+      <button onclick="calcAdd('5')">5</button>
+      <button onclick="calcAdd('6')">6</button>
+      <button onclick="calcAdd('0')">0</button>
+      <button onclick="calcAdd('.')">.</button>
+
+      <button class="clear" onclick="calcClear()">AC</button>
+      <button class="equal" style="grid-column:span 4" onclick="calcEvaluate()">=</button>
+    </div>
+  `);
+  updateCalc();
 }
 
-function goDashboard(){
- hideAllFull();
- document.getElementById("dashboard").classList.remove("hidden");
+function calcAdd(value){
+  calcExpression += value;
+  updateCalc();
 }
 
-// ====================================
-// REAL TIME DATE
+function calcDelete(){
+  calcExpression = calcExpression.slice(0,-1);
+  updateCalc();
+}
+
+function calcClear(){
+  calcExpression = "";
+  calcAnswer = "";
+  updateCalc();
+}
+
+function updateCalc(){
+  const expression = $("calcExpression");
+  const result = $("calcResult");
+  if(expression) expression.textContent = calcExpression;
+  if(result) result.textContent = calcAnswer || "0";
+}
+
+function calcEvaluate(){
+  try{
+    if(!calcExpression.trim()) return;
+
+    let expr = calcExpression;
+
+    const mathScope = {
+      sin:x=>Math.sin(angleMode==="DEG"?x*Math.PI/180:x),
+      cos:x=>Math.cos(angleMode==="DEG"?x*Math.PI/180:x),
+      tan:x=>Math.tan(angleMode==="DEG"?x*Math.PI/180:x),
+      asin:x=>{
+        const v=Math.asin(x);
+        return angleMode==="DEG"?v*180/Math.PI:v;
+      },
+      acos:x=>{
+        const v=Math.acos(x);
+        return angleMode==="DEG"?v*180/Math.PI:v;
+      },
+      atan:x=>{
+        const v=Math.a
